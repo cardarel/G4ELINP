@@ -25,6 +25,8 @@
 //
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//
+// cardarel - First Release - 2014 11 13
 
 #ifdef G4MULTITHREADED
 #include "G4MTRunManager.hh"
