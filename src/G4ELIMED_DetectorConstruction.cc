@@ -705,7 +705,7 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
 
 	//------------------------------- A2 WALL (last wall considering z-axis beam propagation (to experimental rooms)) -----------------------------------------//
 
-        G4Box* fConcreteA2Solid = new G4Box("ConcreteA2",
+        /*G4Box* fConcreteA2Solid = new G4Box("ConcreteA2",
                                               (fRoomWidth +fWallThickness + fWallThickness2) * 0.5,
                                               fWallHeigth * 0.5,
                                               fWallThickness * 0.5);
@@ -716,7 +716,7 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
                                                fConcreteMaterial,
                                                "ConcreteA2");
         
-        fConcreteA2Logic->SetVisAttributes(fConcreteVisAttribute);
+	fConcreteA2Logic->SetVisAttributes(fConcreteVisAttribute);*/
         
         G4ThreeVector fConcreteA2PositionVector = G4ThreeVector(fRoomShiftX -(fWallThickness2 - fWallThickness) * 0.5, //asimmetrical right wall thickness requires this additional shift
         														fRoomShiftY,
@@ -724,8 +724,8 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
         
         fConcreteA2Physical = new G4PVPlacement(0,
                                                 fConcreteA2PositionVector,
-                                                fConcreteA2Logic,
-                                                "fConcreteA2",
+                                                fConcreteA0Logic,//EDIT A2 replaced with A0to make hole in last wall
+                                                "fConcreteA0",//EDIT A2 replaced with A0  to make hole inlast wall
                                                 fWorldLogic,
                                                 false,
                                                 0);
