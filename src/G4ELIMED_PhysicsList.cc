@@ -110,7 +110,7 @@ fPMessenger(0)
     fRaddecayList = new G4RadioactiveDecayPhysics(verboseLevel);
     
     //fEmPhysicsList = new G4EmStandardPhysics(verboseLevel); Option_4 added below PAOLO
-    fEmPhysicsList = new G4EmPenelopePhysics(verboseLevel);
+    fEmPhysicsList = new G4EmStandardPhysics_option4(verboseLevel);
     
     //edited G4HadronPhysicsQGSP_BIC(verboseLevel) -> G4HadronPhysicsQGSP_BIC_HP(verboseLevel) PAOLO
     fHadPhysicsList = new G4HadronPhysicsQGSP_BIC_HP(verboseLevel);
