@@ -851,7 +851,7 @@ if(bCollimatorRelativeRandomDisplacement==2){ // GAUSSIAN DISTRIBUTION
 vDisplacement1 = G4RandGauss::shoot(fCollDisplMean, fCollDisplSigma);
 vDisplacement2 = G4RandGauss::shoot(fCollDisplMean, fCollDisplSigma);
 }
-//G4cout << vDisplacement1 << " " << vDisplacement2 << G4endl;
+G4cout << vDisplacement1 << " " << vDisplacement2 << G4endl;
 //
 
         G4ThreeVector fCollimatorA1PositionVector = G4ThreeVector(+(vRelativeAperture+vDisplacement1),fCollimatorSupportA0B1Distance,0.);

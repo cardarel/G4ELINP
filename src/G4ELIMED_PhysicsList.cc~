@@ -153,7 +153,7 @@ void G4ELIMED_PhysicsList::ConstructProcess()
     AddTransportation();
     
     ConstructParticle();
-
+/*
     fEmPhysicsList->ConstructProcess();
     
     fHadPhysicsList->ConstructProcess();
@@ -170,7 +170,7 @@ void G4ELIMED_PhysicsList::ConstructProcess()
     
 
         fStoppingPhysicsList->ConstructProcess();
-    
+  */  
     G4cout << "### G4ELIMED_PhysicsList::ConstructProcess is done" << G4endl;    
 }
 

@@ -95,14 +95,14 @@ G4ELIMED_DetectorConstructionMessenger::G4ELIMED_DetectorConstructionMessenger(G
     fCollimatorRandDisplMeanCmd->SetGuidance("Set random aperture collimator mean.");
     fCollimatorRandDisplMeanCmd->SetParameterName("randmean",false);
     fCollimatorRandDisplMeanCmd->SetUnitCategory("Length");
-    fCollimatorRandDisplMeanCmd->SetRange("randmean>=0.0");
+    fCollimatorRandDisplMeanCmd->SetRange("distance>=0.0");
     fCollimatorRandDisplMeanCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
 
     fCollimatorRandDisplSigmaCmd = new G4UIcmdWithADoubleAndUnit("/collimator/setRandDisplSigma",this);
     fCollimatorRandDisplSigmaCmd->SetGuidance("Set random aperture collimator sigma.");
     fCollimatorRandDisplSigmaCmd->SetParameterName("randsigma",false);
     fCollimatorRandDisplSigmaCmd->SetUnitCategory("Length");
-    fCollimatorRandDisplSigmaCmd->SetRange("randsigma>=0.0");
+    fCollimatorRandDisplSigmaCmd->SetRange("distance>=0.0");
     fCollimatorRandDisplSigmaCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
 
 }

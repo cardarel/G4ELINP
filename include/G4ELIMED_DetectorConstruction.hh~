@@ -211,8 +211,7 @@ private:
     G4double fCollimatorWidth;
     G4double fCollimatorHeight;
     
-    G4LogicalVolume* fCollimatorLogicL;
-    G4LogicalVolume* fCollimatorLogicR;
+    G4LogicalVolume* fCollimatorLogic;
     G4LogicalVolume* fCollimatorEnvelopeLogic[64];
     G4VPhysicalVolume* fCollimatorEnvelopePhysical;
 
