@@ -339,8 +339,8 @@ void G4ELIMED_DetectorConstruction::DefineMaterials(){
 	G4Element* O  = G4NistManager::Instance()->FindOrBuildElement("O"); 
 	G4Element* Na = G4NistManager::Instance()->FindOrBuildElement("Na"); 
 	G4Element* K  = G4NistManager::Instance()->FindOrBuildElement("K"); 	
-	G4Element* Ca  = G4NistManager::Instance()->FindOrBuildElement("Ca"); 	
-	
+	G4Element* Ca = G4NistManager::Instance()->FindOrBuildElement("Ca"); 	
+	G4Element* Al = G4NistManager::Instance()->FindOrBuildElement("Al"); 	
 	
     G4double density_SS;
     G4int ncomponents_SS;
@@ -362,7 +362,8 @@ void G4ELIMED_DetectorConstruction::DefineMaterials(){
     G4Material* Sand = new G4Material("Sand", density_Sand= 1.700 * CLHEP::g/CLHEP::cm3, ncomponents_Sand = 9);
     Sand->AddElement(H, fractionmass_Sand=0.007833);
     Sand->AddElement(C, fractionmass_Sand=0.003360);
-    Sand->AddElement(O, fractionmass_Sand=0.536153);   
+    Sand->AddElement(O, fractionmass_Sand=0.536153);
+    Sand->AddElement(Al, fractionmass_Sand=0.034401);      
     Sand->AddElement(Na, fractionmass_Sand=0.01763);    
     Sand->AddElement(Si, fractionmass_Sand=0.365067); 
     Sand->AddElement(K, fractionmass_Sand=0.011622);
