@@ -73,7 +73,9 @@ private:
     G4LogicalVolume* fWorldLogic;
     G4VPhysicalVolume* fWorldPhysical;
     G4Material* fWorldMaterial;
-    G4Material* fBeamPipeVacuum;    
+    G4Material* fBeamPipeVacuum;   
+    
+    G4int bLine; 
     // Beam pipe
 private:
     G4bool bBeamPipe;
@@ -180,9 +182,9 @@ private:
     G4double fCollimatorDistance;
     G4double fCollimatorAperture;
 
-G4int bCollimatorRelativeRandomDisplacement;
-G4double fCollDisplMean;
-G4double fCollDisplSigma;
+	G4int bCollimatorRelativeRandomDisplacement;
+	G4double fCollDisplMean;
+	G4double fCollDisplSigma;
 
 public:
     void SetCollimatorNumber(G4int vNumber) {fCollimatorNumber=vNumber;};
@@ -236,20 +238,130 @@ private:
     G4VPhysicalVolume* fCollimatorSupportA0Physical;
     G4VPhysicalVolume* fCollimatorA0Physical;
     G4VPhysicalVolume* fCollimatorA1Physical;
-
+    
+    //Girders and Pedestals
+private:
+    G4double fGirderHeight;
+    G4double fGirderWidth;
+    G4double fGirderThickness;
+    G4double fGirderJointLength;
+    G4double fPedestalHeight;
+    G4double fPedestalWidth;
+    G4double fPedestalLength;
+    G4double fPedestalThickness;
+    G4double fGirderY;
+    G4double fPedestalY;
+    G4double fM27AGirderLength;
+    G4double fM30GirderLength;
+    G4double fM31GirderLength;
+    G4double fM27ADistance;
+    G4double fM30Distance;  
+    G4double fM31Distance;
+    G4double fM33Distance;
+    
+    G4double fM27AMagnetWidth;
+    G4double fM27AMagnetHeight;
+    G4double fM27AMagnetLength;
+    G4double fM27AMagnetPoleWidth;
+    G4double fM27AMagnetPoleHeight;
+    G4double fM27AMagnetCoilWidth;
+    G4double fM27AMagnetCoilHeight;
+	G4double fM27AMagnetCoilLength;
+	G4double fM27AMagnetCoilThickness;
+    
+    G4double fM33GirderLength;
+    G4double fThetaElectron;
+    G4double fM33X;
+    
+    G4double fCSPECInnerRadius;
+    G4double fCSPECOuterRadius;
+    G4double fCSPECLength;
+    G4double fCSPECWindowLength;
+        
+    G4Material* fGirderMaterial;
+    G4Material* fPedestalMaterial;
+    G4Material* fPedestalInsideMaterial;
+    G4Material* fMagnetMaterial;
+    G4Material* fCoilMaterial;
+   
+    	G4LogicalVolume* fGirderJointLogic;
+   		G4LogicalVolume* fPedestalLogic;
+   		G4LogicalVolume* fPedestalInsideLogic;
+    	G4LogicalVolume* fM30GirderLogic;
+        G4LogicalVolume* fM31GirderLogic;
+        G4LogicalVolume* fM27AGirderLogic;
+        G4LogicalVolume* fM33GirderLogic;
+        G4LogicalVolume* fM33Logic;
+         
+        G4LogicalVolume* fCSPECLogic;
+        G4LogicalVolume* fCSPECWindowLogic;   
+        
+        G4LogicalVolume* fM27AMagnetLogic;    
+        G4LogicalVolume* fM27AMagnetBaseLogic; 
+        G4LogicalVolume* fM27AMagnetCoilLogic;   
+        
+        G4VPhysicalVolume* fM30LGirderPhysical;
+        G4VPhysicalVolume* fM30RGirderPhysical;
+        G4VPhysicalVolume* fM31LGirderPhysical;
+        G4VPhysicalVolume* fM31RGirderPhysical;
+        G4VPhysicalVolume* fM27ALGirderPhysical;
+        G4VPhysicalVolume* fM27ARGirderPhysical;
+        G4VPhysicalVolume* fM33LGirderPhysical;
+        G4VPhysicalVolume* fM33RGirderPhysical;
+                       
+        G4VPhysicalVolume* fCSPECPhysical;
+        G4VPhysicalVolume* fCSPECWindow0Physical;
+        G4VPhysicalVolume* fCSPECWindow1Physical;
+        G4VPhysicalVolume* fPbDiskM30Physical;
+                
+        G4VPhysicalVolume* fM30Joint1Physical;
+        G4VPhysicalVolume* fM30Joint2Physical;
+        G4VPhysicalVolume* fM31Joint1Physical;
+        G4VPhysicalVolume* fM31Joint2Physical;
+        G4VPhysicalVolume* fM27AJoint1Physical;
+        G4VPhysicalVolume* fM27AJoint2Physical;
+        G4VPhysicalVolume* fM33Joint1Physical;
+        G4VPhysicalVolume* fM33Joint2Physical;        
+                   
+        G4VPhysicalVolume* fM30Pedestal1Physical;
+        G4VPhysicalVolume* fM30Pedestal1InsidePhysical;
+        G4VPhysicalVolume* fM30Pedestal2Physical;
+        G4VPhysicalVolume* fM30Pedestal2InsidePhysical;
+        G4VPhysicalVolume* fM31Pedestal1Physical;
+        G4VPhysicalVolume* fM31Pedestal1InsidePhysical;
+        G4VPhysicalVolume* fM31Pedestal2Physical;
+        G4VPhysicalVolume* fM31Pedestal2InsidePhysical;
+        G4VPhysicalVolume* fM27APedestal1Physical;
+        G4VPhysicalVolume* fM27APedestal1InsidePhysical;
+        G4VPhysicalVolume* fM27APedestal2Physical; 
+        G4VPhysicalVolume* fM27APedestal2InsidePhysical;         
+        G4VPhysicalVolume* fM33Pedestal1Physical;
+        G4VPhysicalVolume* fM33Pedestal1InsidePhysical; 
+        G4VPhysicalVolume* fM33Pedestal2Physical; 
+        G4VPhysicalVolume* fM33Pedestal2InsidePhysical;  
+        G4VPhysicalVolume* fM33Physical;
+        
+        G4VPhysicalVolume* fM27AMagnetPhysical;
+        G4VPhysicalVolume* fM27AMagnetBasePhysical;
+        G4VPhysicalVolume* fM27AMagnetCoilTopPhysical;
+        G4VPhysicalVolume* fM27AMagnetCoilBottomPhysical;
+                   
     // Transparent detector
 private:
     G4bool bTransparentDetector;
     G4LogicalVolume* fTransparentDetectorLogic;
     G4LogicalVolume* fTransparentDetectorBoxLogic;
+       
         G4VPhysicalVolume* fTransparentDetectorBoxPhysical;
+    
     G4double fTransparentDetectorWidth;
     G4double fTransparentDetectorHeight;
     G4double fTransparentDetectorLength;
-    G4LogicalVolume* fTransparentDetectorRack1Logic;
-    G4LogicalVolume* fTransparentDetectorRack2Logic;
+    
+    	G4LogicalVolume* fTransparentDetectorRack1Logic;
+   		G4LogicalVolume* fTransparentDetectorRack2Logic;
 
-           G4VPhysicalVolume* fTransparentDetectorPhysical;
+        G4VPhysicalVolume* fTransparentDetectorPhysical;
 
     //G4Solid* fBeamPipeHoleSolid;
     //G4LogicalVolume* fBeamPipeHoleLogic;
