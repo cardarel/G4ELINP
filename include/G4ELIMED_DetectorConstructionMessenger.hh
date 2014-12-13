@@ -56,6 +56,7 @@ class G4ELIMED_DetectorConstructionMessenger: public G4UImessenger
     G4UIdirectory* fCollimatorDir;
 
     G4UIcmdWith3VectorAndUnit* fRomanPotSupportAngleCmd;
+    G4UIcmdWith3VectorAndUnit* fRomanPotSupportPositionCmd;
     G4UIcmdWithADoubleAndUnit* fCollimatorApertureCmd;
 
     G4UIcmdWithADoubleAndUnit* fCollimatorDistanceCmd;

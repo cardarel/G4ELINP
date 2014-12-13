@@ -71,6 +71,11 @@ G4ELIMED_DetectorConstructionMessenger::G4ELIMED_DetectorConstructionMessenger(G
     fRomanPotSupportAngleCmd->SetUnitCategory("Angle");
     fRomanPotSupportAngleCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
 
+    fRomanPotSupportPositionCmd = new G4UIcmdWith3VectorAndUnit("/collimator/setPosition",this);
+    fRomanPotSupportPositionCmd->SetGuidance("Set collimator position.");
+    fRomanPotSupportPositionCmd->SetParameterName("posX","posY","posZ",false);
+    fRomanPotSupportPositionCmd->SetUnitCategory("Length");
+    fRomanPotSupportPositionCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
     
     fCollimatorSetupCmd = new G4UIcmdWithAnInteger("/line/set",this);
     fCollimatorSetupCmd->SetGuidance("Set line type 0->[1-5] MeV; 1->[5-20] MeV.");
@@ -116,6 +121,7 @@ G4ELIMED_DetectorConstructionMessenger::~G4ELIMED_DetectorConstructionMessenger(
     delete fCollimatorDistanceCmd;
     delete fCollimatorApertureCmd;
     delete fRomanPotSupportAngleCmd;
+    delete fRomanPotSupportPositionCmd;
     delete fCollimatorSetupCmd;
     delete fPbDisksCmd;
     delete fCollimatorRandDisplCmd;
@@ -139,7 +145,9 @@ void G4ELIMED_DetectorConstructionMessenger::SetNewValue(G4UIcommand * command,G
     if( command == fRomanPotSupportAngleCmd )
     { fDetectorTarget->SetRomanPotSupportAngle(fRomanPotSupportAngleCmd->GetNew3VectorValue(newValue));}
 
-
+    if( command == fRomanPotSupportPositionCmd )
+    { fDetectorTarget->SetRomanPotSupportPosition(fRomanPotSupportPositionCmd->GetNew3VectorValue(newValue));}
+    
     if( command == fCollimatorSetupCmd )
     { fDetectorTarget->ResetDetectorForSetup(fCollimatorSetupCmd->GetNewIntValue(newValue));}
     
@@ -176,6 +184,10 @@ G4String G4ELIMED_DetectorConstructionMessenger::GetCurrentValue(G4UIcommand * c
         cv = fRomanPotSupportAngleCmd->ConvertToString(fDetectorTarget->GetRomanPotSupportAngle(),"deg");
     }
     
+    if(command==fRomanPotSupportPositionCmd ){
+        cv = fRomanPotSupportPositionCmd->ConvertToString(fDetectorTarget->GetRomanPotSupportPosition(),"mm");
+    }
+
     if(command==fCollimatorRandDisplCmd ){
         cv = fCollimatorRandDisplCmd->ConvertToString(fDetectorTarget->GetCollRandDispl());
     }

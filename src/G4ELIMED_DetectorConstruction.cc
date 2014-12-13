@@ -102,7 +102,8 @@ G4ELIMED_DetectorConstruction::G4ELIMED_DetectorConstruction():fWorldLogic(0){
 	fCollDisplMean = 0.5 *  CLHEP::mm;
 	fCollDisplSigma = 0.001 *  CLHEP::mm;
 
-
+    fRomanPotSupportAngle = G4ThreeVector(0.,0.,0.);
+    fRomanPotSupportPosition = G4ThreeVector(0.,0.,0.);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo.....
@@ -139,8 +140,7 @@ void G4ELIMED_DetectorConstruction::ResetDetectorForSetup(int line){
     fRomanPotLength = 86. * CLHEP::cm;
     fRomanPotInnerRadius = 20. * CLHEP::cm;
     fRomanPotOuterRadius = 20.5 * CLHEP::cm;
-    fRomanPotSupportAngle = G4ThreeVector(0.,0.,0.);
-    
+
     // Concrete
     
  	if(bLine==1)
@@ -1018,7 +1018,7 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
     
 
 	fRomanPotCollimatorEnvelopePhysical = new G4PVPlacement(fRomanPotCollimatorEnvelopeRotationMatrix,
-                                                                               G4ThreeVector(0.,0.,0.),
+                                                                               fRomanPotSupportPosition,
                                                                                fRomanPotCollimatorEnvelopeLogic,
                                                                                "RomanPotCollimatorEnvelope",
                                                                                fRomanPotEnvelopeLogic,

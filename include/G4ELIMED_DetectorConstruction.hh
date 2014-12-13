@@ -101,9 +101,12 @@ private:
 public:
     void SetRomanPotSupportAngle(G4ThreeVector vAngle) {fRomanPotSupportAngle=vAngle;};
     G4ThreeVector GetRomanPotSupportAngle() {return fRomanPotSupportAngle;};
-
+    void SetRomanPotSupportPosition(G4ThreeVector vPosition) {fRomanPotSupportPosition=vPosition;};
+    G4ThreeVector GetRomanPotSupportPosition() {return fRomanPotSupportPosition;};
+    
 private:
     G4ThreeVector fRomanPotSupportAngle;
+    G4ThreeVector fRomanPotSupportPosition;
 
     G4bool bRomanPot;
     G4LogicalVolume* fRomanPotWindowLogic;
