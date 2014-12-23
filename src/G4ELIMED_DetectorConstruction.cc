@@ -224,7 +224,7 @@ void G4ELIMED_DetectorConstruction::ResetDetectorForSetup(int line){
     fPedestalThickness = 10. * CLHEP::mm;
     
     fGirderY = - 400. * CLHEP::mm - fGirderHeight * 0.5;
-    fPedestalY = - 1500. * CLHEP::mm + fPedestalHeight * 0.5;
+    fPedestalY = - 1445. * CLHEP::mm + fPedestalHeight * 0.5;
     
     fM27AGirderLength = 1900. * CLHEP::mm;
     fM30GirderLength = 3000.* CLHEP::mm;
@@ -237,18 +237,25 @@ void G4ELIMED_DetectorConstruction::ResetDetectorForSetup(int line){
     
     if(bLine==1)
 		{//H.E. line
-		fM33GirderLength = 2600. * CLHEP::mm;
 		fThetaElectron = 0.12967 * CLHEP::rad;
-				
+		fThetaM34 = 0.12967 * CLHEP::rad + (3.14159 * CLHEP::rad * 0.5 - 0.12967 * CLHEP::rad) * 0.5;
+		
+		fM32GirderLength = 889. * CLHEP::mm * cos(fThetaElectron);
+		fM33GirderLength = 2600. * CLHEP::mm;
+		fM34GirderLength = 2350. * CLHEP::mm;
+						
 		fM27ADistance = fConcreteA1Distance - fConcreteA1Length * 0.5 - 3680. * CLHEP::mm - fM27AGirderLength * 0.5;
 		fM30Distance = fConcreteA1Distance + fConcreteA1Length * 0.5 + 250. * CLHEP::mm + fM30GirderLength * 0.5;
 		fM31Distance = fConcreteA1Distance + fConcreteA1Length * 0.5 + 250. * CLHEP::mm + fM30GirderLength + 250. * CLHEP::mm + fM31GirderLength * 0.5;
+		fM32Distance = fConcreteA1Distance - fConcreteA1Length * 0.5 -  (156. * CLHEP::mm) * cos(fThetaElectron) - fM32GirderLength * 0.5;
 		fM33Distance = fConcreteA1Distance + fConcreteA1Length * 0.5 + 294. * CLHEP::mm + fM33GirderLength * 0.5;
+		fM34Distance = fConcreteA1Distance + fConcreteA1Length * 0.5 + 4383. * CLHEP::mm; 
 		
-		fM33X = 908 * CLHEP::mm; //atan(fThetaElectron) * fM33Distance;
+		fM32X = 503.4 * CLHEP::mm; 
+		fM33X = 908. * CLHEP::mm; 
+		fM34X = 1765. * CLHEP::mm; 
 		
 		//M27A MAgnet
-		
 		fM27AMagnetWidth = 392.6 * CLHEP::mm;
 		fM27AMagnetHeight = 196. * CLHEP::mm;
 		fM27AMagnetLength = 683. * CLHEP::mm;
@@ -259,6 +266,22 @@ void G4ELIMED_DetectorConstruction::ResetDetectorForSetup(int line){
 		fM27AMagnetCoilHeight = 38.1 * CLHEP::mm;
 		fM27AMagnetCoilThickness = 74.3 * CLHEP::mm; //single donut width
 		fM27AMagnetCoilLength = fM27AMagnetLength + 2. * fM27AMagnetCoilThickness;
+		
+		//M34 Magnet
+		fM34MagnetRadius = 1600 *CLHEP::mm;
+		fM34MagnetInnerRadius = fM34MagnetRadius - 310 * CLHEP::mm;
+        fM34MagnetOuterRadius = fM34MagnetRadius + 310 * CLHEP::mm;
+        fM34MagnetHeight = 452 * CLHEP::mm;
+        fM34MagnetThetaStart = -3.14159 * CLHEP::rad + fThetaElectron + (112./fM34MagnetRadius)*CLHEP::rad;
+        fM34MagnetThetaEnd = 3.14159 * CLHEP::rad * 0.5 - fThetaElectron - (200./fM34MagnetRadius)*CLHEP::rad;
+        
+        fM34MagnetCoilHeight = 98 * CLHEP::mm;
+		fM34MagnetCoilThickness = 106 * CLHEP::mm; //single donut width
+		fM34MagnetCoilThetaStart = -3.14159 * CLHEP::rad + fThetaElectron;
+        fM34MagnetCoilThetaEnd = 3.14159 * CLHEP::rad * 0.5 - fThetaElectron;
+        fM34MagnetCoilHoleThetaStart = -3.14159 * CLHEP::rad + fThetaElectron + (110./fM34MagnetRadius)*CLHEP::rad;
+        fM34MagnetCoilHoleThetaEnd = 3.14159 * CLHEP::rad * 0.5 - fThetaElectron - (195./fM34MagnetRadius)*CLHEP::rad;
+
 		
 		}
 		else
@@ -1544,7 +1567,7 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
     
     fM27AMagnetCoilLogic = new G4LogicalVolume(fM27AMagnetCoilSolid,
                                                fCoilMaterial,
-                                               "M27AMagnetBase");
+                                               "M27AMagnetCoil");
         
     fM27AMagnetCoilLogic->SetVisAttributes(fMagnetCoilAttribute);
     
@@ -1558,17 +1581,398 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
                                             fWorldLogic,
                                             false,
                                             0);  
-      fM27AMagnetCoilBottomPhysical = new G4PVPlacement(0,
+    fM27AMagnetCoilBottomPhysical = new G4PVPlacement(0,
                                             fM27AMagnetCoilBottomPositionVector,
                                             fM27AMagnetCoilLogic,
                                             "M27AMagnetCoilBottom",
                                             fWorldLogic,
                                             false,
-                                            0);       
+                                            0);      
+    
+    //M34
+     	
+    G4Box* fM34Solid = new G4Box("M34",
+                                  fGirderWidth * 0.5 +fGirderJointLength,
+                                  60. * CLHEP::cm,
+                                  fM34GirderLength * 0.5);
+    
+    fM34Logic = new G4LogicalVolume(fM34Solid,				//M34Logic envelope for the rotation of the whole module (girder+joints+pedestals)
+                                    fWorldMaterial,
+                                    "M34");
+    
+	
+	G4Box* fM34GirderA0Solid = new G4Box("M34GirderA0",
+                                              fGirderWidth * 0.5,
+                                              fGirderHeight * 0.5,
+                                              fM34GirderLength * 0.5);
+    
+    G4Box* fM34GirderA1Solid = new G4Box("M34GirderA1",
+                                              fGirderWidth * 0.5 - fGirderThickness,
+                                              fGirderHeight * 0.5 - fGirderThickness,
+                                              fM34GirderLength * 0.6);
+    
+    G4SubtractionSolid* fM34GirderSolid = new G4SubtractionSolid("M34Girder", fM34GirderA0Solid, fM34GirderA1Solid);
+    
+    fM34GirderLogic = new G4LogicalVolume(fM34GirderSolid,
+                                               fGirderMaterial,
+                                               "M34Girder");
+        
+    fM34GirderLogic->SetVisAttributes(fGirderAttribute);
+    
+    		 
+    G4ThreeVector fM34LGirderPositionVector = G4ThreeVector(-fGirderJointLength * 0.5 - fGirderWidth * 0.5, fGirderY + 900. *CLHEP::mm,0.); //support are made of 2 parallel identical girders, this is Left
+    G4ThreeVector fM34RGirderPositionVector = G4ThreeVector(+fGirderJointLength * 0.5 + fGirderWidth * 0.5, fGirderY + 900. *CLHEP::mm,0.); // this is right
+    
+    
+    fM34LGirderPhysical = new G4PVPlacement(0,
+                                            fM34LGirderPositionVector,
+                                            fM34GirderLogic,
+                                            "M34LGirder",
+                                            fM34Logic,
+                                            false,
+                                            0);    
+    
+    
+    fM34RGirderPhysical = new G4PVPlacement(0,
+                                            fM34RGirderPositionVector,
+                                            fM34GirderLogic,
+                                            "M34RGirder",
+                                            fM34Logic,
+                                            false,
+                                            0);
+    
+    G4ThreeVector fM34Joint1PositionVector = G4ThreeVector(0., fGirderY + 900. *CLHEP::mm, - fM34GirderLength * 0.5 + fGirderWidth * 0.5); 
+    G4ThreeVector fM34Joint2PositionVector = G4ThreeVector(0., fGirderY + 900. *CLHEP::mm, + fM34GirderLength * 0.5 - fGirderWidth * 0.5);
+    
+    fM34Joint1Physical = new G4PVPlacement(0,
+                                           fM34Joint1PositionVector,
+                                           fGirderJointLogic,
+                                           "M34Joint1",
+                                           fM34Logic,
+                                           false,
+                                           0);  
+     
+     fM34Joint2Physical = new G4PVPlacement(0,
+                                            fM34Joint2PositionVector,
+                                            fGirderJointLogic,
+                                            "M34Joint2",
+                                            fM34Logic,
+                                            false,
+                                            0);
+  
        
+   
+   
+    //M34 Pedestals
+    G4ThreeVector fM34Pedestal1PositionVector = G4ThreeVector(0., fPedestalY + 900. *CLHEP::mm,- fM34GirderLength * 0.5 + fPedestalLength * 0.5); 
+    G4ThreeVector fM34Pedestal2PositionVector = G4ThreeVector(0., fPedestalY + 900. *CLHEP::mm,+ fM34GirderLength * 0.5 - fPedestalLength * 0.5);
+    
+    fM34Pedestal1Physical = new G4PVPlacement(0,
+                                            fM34Pedestal1PositionVector,
+                                            fPedestalLogic,
+                                            "M34Pedestal1",
+                                            fM34Logic,
+                                            false,
+                                            0);  
+    
+    fM34Pedestal1InsidePhysical = new G4PVPlacement(0,
+                                            fM34Pedestal1PositionVector,
+                                            fPedestalInsideLogic,
+                                            "M34Pedestal1Inside",
+                                            fM34Logic,
+                                            false,
+                                            0);                                            
+     
+     fM34Pedestal2Physical = new G4PVPlacement(0,
+                                            fM34Pedestal2PositionVector,
+                                            fPedestalLogic,
+                                            "M34Pedestal2",
+                                            fM34Logic,
+                                            false,
+                                            0); 
+                                            
+    fM34Pedestal2InsidePhysical = new G4PVPlacement(0,
+                                            fM34Pedestal2PositionVector,
+                                            fPedestalInsideLogic,
+                                            "M34Pedestal2Inside",
+                                            fM34Logic,
+                                            false,
+                                            0);  
+     
+     //M34 Complete (girder+joints+pedestals)
+     G4ThreeVector fM34PositionVector = G4ThreeVector(fM34X,- 900. *CLHEP::mm,fM34Distance); 
+     
+     G4RotationMatrix *fM34RotationMatrix = new G4RotationMatrix(0.,0.,0.);
+     
+    
+     fM34RotationMatrix->rotateY(-fThetaM34);
+
+     
+     fM34Physical = new G4PVPlacement(fM34RotationMatrix,
+                                      fM34PositionVector,
+                                      fM34Logic,
+                                      "M34",
+                                      fWorldLogic,
+                                      false,
+                                      0); 
+     
+     
+    //M34 Dump Magnet 
+    
+    G4Tubs* fM34MagnetA0Solid = new G4Tubs("M34MagnetA0",		//external box
+                                  		 fM34MagnetInnerRadius,
+                                    	 fM34MagnetOuterRadius,
+                                		 fM34MagnetHeight * 0.5,
+                                		 fM34MagnetThetaStart,
+                                		 fM34MagnetThetaEnd);
+
+	G4Tubs* fM34MagnetA1Solid = new G4Tubs("M34MagnetA1",		//poles hole
+                                  		 fM34MagnetInnerRadius + 80. * CLHEP::mm,
+                                    	 fM34MagnetOuterRadius - 80. * CLHEP::mm,
+                                		 25. * CLHEP::mm,
+                                		 fM34MagnetThetaStart*1.02,
+                                		 fM34MagnetThetaEnd*1.05);
+                                		 
+	G4Tubs* fM34MagnetA2Solid = new G4Tubs("M34MagnetA2",		//coils hole
+                                  		 fM34MagnetRadius - 240. * CLHEP::mm,
+                                    	 fM34MagnetRadius - 60. * CLHEP::mm,
+                                		 (254. * 0.5) * CLHEP::mm,
+                                		 fM34MagnetThetaStart*1.02,
+                                		 fM34MagnetThetaEnd*1.05);                          		 
+    
+    G4Tubs* fM34MagnetA3Solid = new G4Tubs("M34MagnetA2",		//coils hole
+                                  		 fM34MagnetRadius + 60. * CLHEP::mm,
+                                    	 fM34MagnetRadius + 240. * CLHEP::mm,
+                                		 (254. * 0.5) * CLHEP::mm,
+                                		 fM34MagnetThetaStart*1.02,
+                                		 fM34MagnetThetaEnd*1.05);       
+        
+    G4SubtractionSolid* fM34MagnetA0A1Solid = new G4SubtractionSolid("M34MagnetA0A1Solid", 
+        															  fM34MagnetA0Solid, 
+        															  fM34MagnetA1Solid,
+        															  0,
+        															  G4ThreeVector(0.,0.,0.));
+                          		 
+    G4SubtractionSolid* fM34MagnetA0A1A2Solid = new G4SubtractionSolid("M34MagnetA0A1A2Solid", 
+   		   															  fM34MagnetA0A1Solid, 
+        															  fM34MagnetA2Solid,
+        															  0,
+        															  G4ThreeVector(0.,0.,0.));    
+    
+    G4SubtractionSolid* fM34MagnetA0A1A2A3Solid = new G4SubtractionSolid("M34MagnetA0A1Solid", 
+        															  fM34MagnetA0A1A2Solid, 
+        															  fM34MagnetA3Solid,
+        															  0,
+        															  G4ThreeVector(0.,0.,0.));  
+    fM34MagnetLogic = new G4LogicalVolume(fM34MagnetA0A1A2A3Solid,
+                                               fMagnetMaterial,
+                                               "M34AMagnet");
+                                               
+        
+    fM34MagnetLogic->SetVisAttributes(fMagnetAttribute);
+    
+        G4ThreeVector fM34MagnetPositionVector = G4ThreeVector(fM33X+fM34MagnetRadius*cos(fThetaElectron)+(fM33GirderLength*0.5 + 500*CLHEP::mm)*sin(fThetaElectron),0.,fM33Distance+(fM33GirderLength*0.5 + 500 *CLHEP::mm)*cos(fThetaElectron) - fM34MagnetRadius * sin(fThetaElectron)); 
+         
+     
+     G4RotationMatrix *fM34MagnetRotationMatrix = new G4RotationMatrix(0.,0.,0.);
+         
+     fM34MagnetRotationMatrix->rotateX(1.57079);
+     
+     fM34MagnetPhysical = new G4PVPlacement(fM34MagnetRotationMatrix,
+                                      fM34MagnetPositionVector,
+                                      fM34MagnetLogic,
+                                      "M34Magnet",
+                                      fWorldLogic,
+                                      false,
+                                      0); 
+    
+    //M34 Dump Magnet Coils
+    G4Tubs* fM34MagnetCoilA0Solid = new G4Tubs("M34MagnetCoilA0",		//external box
+                                  		 fM34MagnetRadius - 190. * CLHEP::mm,
+                                    	 fM34MagnetRadius + 190. * CLHEP::mm,
+                                		 fM34MagnetCoilHeight * 0.5,
+                                		 fM34MagnetCoilThetaStart,
+                                		 fM34MagnetCoilThetaEnd);
+
+	G4Tubs* fM34MagnetCoilA1Solid = new G4Tubs("M34MagnetCoilA1",		//hole
+                                  		 fM34MagnetRadius - 88. * CLHEP::mm,
+                                    	 fM34MagnetRadius + 88. * CLHEP::mm,
+                                		 fM34MagnetCoilHeight * 0.6,
+                                		 fM34MagnetCoilHoleThetaStart,
+                                		 fM34MagnetCoilHoleThetaEnd);   
+                                		 
+    G4SubtractionSolid* fM34MagnetCoilSolid = new G4SubtractionSolid("M34MagnetACoilSolid", 
+        															  fM34MagnetCoilA0Solid, 
+        															  fM34MagnetCoilA1Solid,
+        															  0,
+        															  G4ThreeVector(0.,0.,0.));   
+    
+    fM34MagnetCoilLogic = new G4LogicalVolume(fM34MagnetCoilSolid,
+                                               fCoilMaterial,
+                                               "M34AMagnetCoil");
+                                               
+        
+    fM34MagnetCoilLogic->SetVisAttributes(fMagnetCoilAttribute);     
+     
+                                                    
+     G4ThreeVector fM34MagnetCoilTopPositionVector = G4ThreeVector(
+     													fM33X+fM34MagnetRadius*cos(fThetaElectron) + (fM33GirderLength * 0.5 + 500*CLHEP::mm) * sin(fThetaElectron),
+     													126.5 * CLHEP::mm - fM34MagnetCoilHeight * 0.5,
+     													fM33Distance+ (fM33GirderLength*0.5 + 500 *CLHEP::mm) * cos(fThetaElectron) - fM34MagnetRadius * sin(fThetaElectron)); 
+
+     G4ThreeVector fM34MagnetCoilBottomPositionVector = G4ThreeVector(
+    													 fM33X + fM34MagnetRadius*cos(fThetaElectron) + (fM33GirderLength *0.5 + 500 *CLHEP::mm) * sin(fThetaElectron),
+     													-126.5 * CLHEP::mm + fM34MagnetCoilHeight * 0.5,
+     													fM33Distance + (fM33GirderLength *0.5 + 500 *CLHEP::mm) * cos(fThetaElectron) - fM34MagnetRadius * sin(fThetaElectron)
+     													); 
+         
+     //G4RotationMatrix *fM34MagnetRotationMatrix = new G4RotationMatrix(0.,0.,0.);
+         
+     //fM34MagnetRotationMatrix->rotateX(1.57079);
+     
+     fM34MagnetCoilTopPhysical = new G4PVPlacement(fM34MagnetRotationMatrix,
+                                      fM34MagnetCoilTopPositionVector,
+                                      fM34MagnetCoilLogic,
+                                      "M34MagnetCoilTop",
+                                      fWorldLogic,
+                                      false,
+                                      0); 
+     
+     fM34MagnetCoilBottomPhysical = new G4PVPlacement(fM34MagnetRotationMatrix,
+                                      fM34MagnetCoilBottomPositionVector,
+                                      fM34MagnetCoilLogic,
+                                      "M34MagnetCoilBottom",
+                                      fWorldLogic,
+                                      false,
+                                      0); 
+      
+    //M32
+    G4Box* fM32Solid = new G4Box("M32",
+                                  fGirderWidth * 0.5 +fGirderJointLength,
+                                  60. * CLHEP::cm,
+                                  fM32GirderLength * 0.5);
+    
+    fM32Logic = new G4LogicalVolume(fM32Solid,				//M32Logic envelope for the rotation of the whole module (girder+joints+pedestals)
+                                    fWorldMaterial,
+                                    "M32");
+    
+	
+	G4Box* fM32GirderA0Solid = new G4Box("M32GirderA0",
+                                              fGirderWidth * 0.5,
+                                              fGirderHeight * 0.5,
+                                              fM32GirderLength * 0.5);
+    
+    G4Box* fM32GirderA1Solid = new G4Box("M32GirderA1",
+                                              fGirderWidth * 0.5 - fGirderThickness,
+                                              fGirderHeight * 0.5 - fGirderThickness,
+                                              fM32GirderLength * 0.6);
+    
+    G4SubtractionSolid* fM32GirderSolid = new G4SubtractionSolid("M32Girder", fM32GirderA0Solid, fM32GirderA1Solid);
+    
+    fM32GirderLogic = new G4LogicalVolume(fM32GirderSolid,
+                                               fGirderMaterial,
+                                               "M32Girder");
+        
+    fM32GirderLogic->SetVisAttributes(fGirderAttribute);
+    
+    		 
+    G4ThreeVector fM32LGirderPositionVector = G4ThreeVector(-fGirderJointLength * 0.5 - fGirderWidth * 0.5, fGirderY + 900. *CLHEP::mm,0.); //support are made of 2 parallel identical girders, this is Left
+    G4ThreeVector fM32RGirderPositionVector = G4ThreeVector(+fGirderJointLength * 0.5 + fGirderWidth * 0.5, fGirderY + 900. *CLHEP::mm,0.); // this is right
+    
+    
+    fM32LGirderPhysical = new G4PVPlacement(0,
+                                            fM32LGirderPositionVector,
+                                            fM32GirderLogic,
+                                            "M32LGirder",
+                                            fM32Logic,
+                                            false,
+                                            0);    
+    
+    
+    fM32RGirderPhysical = new G4PVPlacement(0,
+                                            fM32RGirderPositionVector,
+                                            fM32GirderLogic,
+                                            "M32RGirder",
+                                            fM32Logic,
+                                            false,
+                                            0);
+    
+    G4ThreeVector fM32Joint1PositionVector = G4ThreeVector(0., fGirderY + 900. *CLHEP::mm,- fM32GirderLength * 0.5 + fGirderWidth * 0.5); 
+    G4ThreeVector fM32Joint2PositionVector = G4ThreeVector(0., fGirderY + 900. *CLHEP::mm, + fM32GirderLength * 0.5 - fGirderWidth * 0.5);
+    
+    fM32Joint1Physical = new G4PVPlacement(0,
+                                           fM32Joint1PositionVector,
+                                           fGirderJointLogic,
+                                           "M32Joint1",
+                                           fM32Logic,
+                                           false,
+                                           0);  
+     
+     fM32Joint2Physical = new G4PVPlacement(0,
+                                            fM32Joint2PositionVector,
+                                            fGirderJointLogic,
+                                            "M32Joint2",
+                                            fM32Logic,
+                                            false,
+                                            0);
+  
+       
+   
+   
+    //M32 Pedestals
+    G4ThreeVector fM32Pedestal1PositionVector = G4ThreeVector(0., fPedestalY+ 900. *CLHEP::mm,- fM32GirderLength * 0.5 + fPedestalLength * 0.5); 
+    G4ThreeVector fM32Pedestal2PositionVector = G4ThreeVector(0., fPedestalY+ 900. *CLHEP::mm,+ fM32GirderLength * 0.5 - fPedestalLength * 0.5);
+    
+    fM32Pedestal1Physical = new G4PVPlacement(0,
+                                            fM32Pedestal1PositionVector,
+                                            fPedestalLogic,
+                                            "M32Pedestal1",
+                                            fM32Logic,
+                                            false,
+                                            0);  
+    
+    fM32Pedestal1InsidePhysical = new G4PVPlacement(0,
+                                            fM32Pedestal1PositionVector,
+                                            fPedestalInsideLogic,
+                                            "M32Pedestal1Inside",
+                                            fM32Logic,
+                                            false,
+                                            0);                                            
+     
+     fM32Pedestal2Physical = new G4PVPlacement(0,
+                                            fM32Pedestal2PositionVector,
+                                            fPedestalLogic,
+                                            "M32Pedestal2",
+                                            fM32Logic,
+                                            false,
+                                            0); 
+                                            
+    fM32Pedestal2InsidePhysical = new G4PVPlacement(0,
+                                            fM32Pedestal2PositionVector,
+                                            fPedestalInsideLogic,
+                                            "M32Pedestal2Inside",
+                                            fM32Logic,
+                                            false,
+                                            0);  
+     
+     //M32 Complete (girders+joints+pedestals)                                      
+     G4ThreeVector fM32PositionVector = G4ThreeVector(fM32X,- 900. *CLHEP::mm,fM32Distance); 
+     
+     G4RotationMatrix *fElectronRotationMatrix = new G4RotationMatrix(0.,0.,0.);
+     
+    
+     fElectronRotationMatrix->rotateY(-fThetaElectron);
+
+     
+     fM32Physical = new G4PVPlacement(fElectronRotationMatrix,
+                                      fM32PositionVector,
+                                      fM32Logic,
+                                      "M32",
+                                      fWorldLogic,
+                                      false,
+                                      0);        
      
     //M33
-     	
     G4Box* fM33Solid = new G4Box("M33",
                                   fGirderWidth * 0.5 +fGirderJointLength,
                                   150 * CLHEP::cm,
@@ -1676,13 +2080,14 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
                                             fM33Logic,
                                             false,
                                             0);  
-                                            
+     
+     //M33 Complete (girders+joints+pedestals)                                      
      G4ThreeVector fM33PositionVector = G4ThreeVector(fM33X,0.,fM33Distance); 
      
-     G4RotationMatrix *fElectronRotationMatrix = new G4RotationMatrix(0.,0.,0.);
+     //G4RotationMatrix *fElectronRotationMatrix = new G4RotationMatrix(0.,0.,0.);
      
     
-     fElectronRotationMatrix->rotateY(-fThetaElectron);
+     //fElectronRotationMatrix->rotateY(-fThetaElectron);
 
      
      fM33Physical = new G4PVPlacement(fElectronRotationMatrix,
@@ -1693,7 +2098,7 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
                                       false,
                                       0); 
      
-     } 
+     }
     
     // Transparent detector
     if(bTransparentDetector){
@@ -1743,7 +2148,7 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
                                                          false,
                                                          0);
         
-        fTransparentDetectorPositionVector = G4ThreeVector(0.,fRoomShiftY,fBeamPipeA0Length - fTransparentDetectorLength * 0.5);
+        fTransparentDetectorPositionVector = G4ThreeVector(0.,fRoomShiftY,fBeamPipeA0Length - fTransparentDetectorLength * 0.5 - 5.0 * CLHEP::mm); //5mm shift on z-axis to avoid overlap with M32
         
         fTransparentDetectorPhysical = new G4PVPlacement(0,
                                                          fTransparentDetectorPositionVector,
@@ -1753,7 +2158,7 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
                                                          false,
                                                          1);
 
-        fTransparentDetectorPositionVector = G4ThreeVector(0.,fRoomShiftY,fBeamPipeA0Length + (fRomanPotLength + 2.*fRomanPotWindowLength) + fTransparentDetectorLength * 0.5);
+        fTransparentDetectorPositionVector = G4ThreeVector(0.,fRoomShiftY,fConcreteA1Distance - fConcreteA1Length * 0.5 - fTransparentDetectorLength * 0.5);
 
         fTransparentDetectorPhysical = new G4PVPlacement(0,
                                                          fTransparentDetectorPositionVector,

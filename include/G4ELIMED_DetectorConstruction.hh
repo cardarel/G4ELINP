@@ -260,7 +260,9 @@ private:
     G4double fM27ADistance;
     G4double fM30Distance;  
     G4double fM31Distance;
+    G4double fM32Distance;
     G4double fM33Distance;
+    G4double fM34Distance;
     
     G4double fM27AMagnetWidth;
     G4double fM27AMagnetHeight;
@@ -271,11 +273,30 @@ private:
     G4double fM27AMagnetCoilHeight;
 	G4double fM27AMagnetCoilLength;
 	G4double fM27AMagnetCoilThickness;
+	
+	G4double fM34MagnetRadius;
+	G4double fM34MagnetInnerRadius;
+    G4double fM34MagnetOuterRadius;
+    G4double fM34MagnetHeight;
+    G4double fM34MagnetThetaStart;
+    G4double fM34MagnetThetaEnd;
+    G4double fM34MagnetCoilHeight;
+    G4double fM34MagnetCoilThickness; 
+	G4double fM34MagnetCoilThetaStart;
+    G4double fM34MagnetCoilThetaEnd;
+    G4double fM34MagnetCoilHoleThetaStart;
+    G4double fM34MagnetCoilHoleThetaEnd;
     
-    G4double fM33GirderLength;
     G4double fThetaElectron;
+    G4double fThetaM34;
+
+    G4double fM32GirderLength;
+    G4double fM32X;    
+    G4double fM33GirderLength;
     G4double fM33X;
-    
+    G4double fM34GirderLength;
+    G4double fM34X; 
+       
     G4double fCSPECInnerRadius;
     G4double fCSPECOuterRadius;
     G4double fCSPECLength;
@@ -293,15 +314,22 @@ private:
     	G4LogicalVolume* fM30GirderLogic;
         G4LogicalVolume* fM31GirderLogic;
         G4LogicalVolume* fM27AGirderLogic;
+        G4LogicalVolume* fM32GirderLogic;
+        G4LogicalVolume* fM32Logic;        
         G4LogicalVolume* fM33GirderLogic;
         G4LogicalVolume* fM33Logic;
+        G4LogicalVolume* fM34GirderLogic;
+        G4LogicalVolume* fM34Logic;       
          
         G4LogicalVolume* fCSPECLogic;
         G4LogicalVolume* fCSPECWindowLogic;   
         
         G4LogicalVolume* fM27AMagnetLogic;    
         G4LogicalVolume* fM27AMagnetBaseLogic; 
-        G4LogicalVolume* fM27AMagnetCoilLogic;   
+        G4LogicalVolume* fM27AMagnetCoilLogic;  
+        
+        G4LogicalVolume* fM34MagnetLogic;
+        G4LogicalVolume* fM34MagnetCoilLogic;
         
         G4VPhysicalVolume* fM30LGirderPhysical;
         G4VPhysicalVolume* fM30RGirderPhysical;
@@ -309,9 +337,13 @@ private:
         G4VPhysicalVolume* fM31RGirderPhysical;
         G4VPhysicalVolume* fM27ALGirderPhysical;
         G4VPhysicalVolume* fM27ARGirderPhysical;
+        G4VPhysicalVolume* fM32LGirderPhysical;
+        G4VPhysicalVolume* fM32RGirderPhysical;
         G4VPhysicalVolume* fM33LGirderPhysical;
         G4VPhysicalVolume* fM33RGirderPhysical;
-                       
+        G4VPhysicalVolume* fM34LGirderPhysical;
+        G4VPhysicalVolume* fM34RGirderPhysical;   
+                            
         G4VPhysicalVolume* fCSPECPhysical;
         G4VPhysicalVolume* fCSPECWindow0Physical;
         G4VPhysicalVolume* fCSPECWindow1Physical;
@@ -323,8 +355,12 @@ private:
         G4VPhysicalVolume* fM31Joint2Physical;
         G4VPhysicalVolume* fM27AJoint1Physical;
         G4VPhysicalVolume* fM27AJoint2Physical;
+        G4VPhysicalVolume* fM32Joint1Physical;
+        G4VPhysicalVolume* fM32Joint2Physical;
         G4VPhysicalVolume* fM33Joint1Physical;
-        G4VPhysicalVolume* fM33Joint2Physical;        
+        G4VPhysicalVolume* fM33Joint2Physical;   
+        G4VPhysicalVolume* fM34Joint1Physical;
+        G4VPhysicalVolume* fM34Joint2Physical;        
                    
         G4VPhysicalVolume* fM30Pedestal1Physical;
         G4VPhysicalVolume* fM30Pedestal1InsidePhysical;
@@ -337,17 +373,31 @@ private:
         G4VPhysicalVolume* fM27APedestal1Physical;
         G4VPhysicalVolume* fM27APedestal1InsidePhysical;
         G4VPhysicalVolume* fM27APedestal2Physical; 
-        G4VPhysicalVolume* fM27APedestal2InsidePhysical;         
+        G4VPhysicalVolume* fM27APedestal2InsidePhysical;
+        G4VPhysicalVolume* fM32Pedestal1Physical;
+        G4VPhysicalVolume* fM32Pedestal1InsidePhysical; 
+        G4VPhysicalVolume* fM32Pedestal2Physical; 
+        G4VPhysicalVolume* fM32Pedestal2InsidePhysical;  
+        G4VPhysicalVolume* fM32Physical;        
         G4VPhysicalVolume* fM33Pedestal1Physical;
         G4VPhysicalVolume* fM33Pedestal1InsidePhysical; 
         G4VPhysicalVolume* fM33Pedestal2Physical; 
         G4VPhysicalVolume* fM33Pedestal2InsidePhysical;  
         G4VPhysicalVolume* fM33Physical;
+        G4VPhysicalVolume* fM34Pedestal1Physical;
+        G4VPhysicalVolume* fM34Pedestal1InsidePhysical; 
+        G4VPhysicalVolume* fM34Pedestal2Physical; 
+        G4VPhysicalVolume* fM34Pedestal2InsidePhysical;  
+        G4VPhysicalVolume* fM34Physical;
         
         G4VPhysicalVolume* fM27AMagnetPhysical;
         G4VPhysicalVolume* fM27AMagnetBasePhysical;
         G4VPhysicalVolume* fM27AMagnetCoilTopPhysical;
         G4VPhysicalVolume* fM27AMagnetCoilBottomPhysical;
+        
+        G4VPhysicalVolume* fM34MagnetPhysical;
+        G4VPhysicalVolume* fM34MagnetCoilTopPhysical;
+        G4VPhysicalVolume* fM34MagnetCoilBottomPhysical;
                    
     // Transparent detector
 private:
