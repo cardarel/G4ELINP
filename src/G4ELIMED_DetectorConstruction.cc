@@ -80,13 +80,14 @@ G4ELIMED_DetectorConstruction::G4ELIMED_DetectorConstruction():fWorldLogic(0){
     // World
     fWorldSize = G4ThreeVector(20000. * CLHEP::cm,20000. * CLHEP::cm,20000. * CLHEP::cm);
     
-    // Beam pipe
+    // Beam pipe e Modules
     bBeamPipe = true;
     bConcrete = true;
     bRomanPot = true;
     bCollimatorSupport = true;
     bCollimator = true;
     bTransparentDetector = true;
+    bModulesOn = true;
     
     // Pb disks
     PbDisks = 0;
@@ -115,39 +116,39 @@ G4ELIMED_DetectorConstruction::~G4ELIMED_DetectorConstruction(){
 
 void G4ELIMED_DetectorConstruction::ResetDetectorForSetup(int line){
 
-			/////////////////////LINE SELECTION ONLY FOR TEST!!
-	
-			 //line = 1; // 1 for HE / 0 for LE
 
-			////////////////
 	bLine=line;
-	
-    // Beam Pipe
-    fBeamPipeA0Length = 982.5 * CLHEP::cm;
+	//Collimator center distance
+	 fCollimatorCenterDistance = 1025.5 * CLHEP::cm;
     if(bLine==1){
+        fCollimatorCenterDistance = 904. * CLHEP::cm;
+			}
+    // Roman Pot
+    fRomanPotWindowLength = 2.5 * CLHEP::cm;
+    fRomanPotWindowInnerRadius = 2.16 * CLHEP::cm;
+    fRomanPotWindowOuterRadius = 10. * CLHEP::cm;
+    
+    fRomanPotLength = 47. * CLHEP::cm;
+    fRomanPotInnerRadius = 8.1 * CLHEP::cm;
+    fRomanPotOuterRadius = 8.35 * CLHEP::cm; 
+          
+    // Beam Pipe
+    fBeamPipeA0Length = fCollimatorCenterDistance - 0.5 * fRomanPotLength - fRomanPotWindowLength;
+    /*if(bLine==1){
         fBeamPipeA0Length = 861. * CLHEP::cm;
-    }
+    }*/
     fBeamPipeA0InnerRadius = 2. * CLHEP::cm;
     fBeamPipeA0OuterRadius = 2.16 * CLHEP::cm;
     
-    fBeamPipeA2Length = 120. * CLHEP::cm;
+    fBeamPipeA2Length = 1188.5 * CLHEP::cm - fCollimatorCenterDistance - 0.5 * fRomanPotLength - fRomanPotWindowLength;
+    if(bLine==1){
+        fBeamPipeA2Length = 1067 * CLHEP::cm - fCollimatorCenterDistance - 0.5 * fRomanPotLength - fRomanPotWindowLength;
+			}
     
-    // Roman Pot
-    fRomanPotWindowLength = 0.5 * CLHEP::cm;
-    fRomanPotWindowInnerRadius = 2.16 * CLHEP::cm;
-    fRomanPotWindowOuterRadius = 20.5 * CLHEP::cm;
-    
-    fRomanPotLength = 86. * CLHEP::cm;
-    fRomanPotInnerRadius = 20. * CLHEP::cm;
-    fRomanPotOuterRadius = 20.5 * CLHEP::cm;
-
     // Concrete
-    
- 	if(bLine==1)
+    if(bLine==1)
 	{
-
 	// High Energy line variables definition for walls
-
 	fRoomWidth = 1000. * CLHEP::cm;
 	fRoomLength = 1239. * CLHEP::cm;
 	fRoomHeigth = 500. * CLHEP::cm;
@@ -188,14 +189,12 @@ void G4ELIMED_DetectorConstruction::ResetDetectorForSetup(int line){
 	fConcreteA0Distance = 611. * CLHEP::cm + fWallThickness* 0.5;
 	}
 
-
-	// Same concrete A1 shielding block HE and LE lines
+	//A1 shielding block concrete - Same for HE and LE lines
  	fConcreteA1Length = 100. * CLHEP::cm;
 	fConcreteA1Width = 200. * CLHEP::cm;
 	fConcreteA1Height = 200. * CLHEP::cm;
 	fConcreteA1RadiusPipe = 2.16 * CLHEP::cm;
-	fConcreteA1Distance = fRomanPotLength + fBeamPipeA0Length + 2*fRomanPotWindowLength + 120. * CLHEP::cm - fConcreteA1Length * 0.5;
-
+	fConcreteA1Distance = fBeamPipeA2Length + fRomanPotLength + fBeamPipeA0Length + 2*fRomanPotWindowLength - fConcreteA1Length * 0.5;
     
     // Collimator
     fCollimatorLength = 20. * CLHEP::mm;
@@ -244,7 +243,7 @@ void G4ELIMED_DetectorConstruction::ResetDetectorForSetup(int line){
 		fM33GirderLength = 2600. * CLHEP::mm;
 		fM34GirderLength = 2350. * CLHEP::mm;
 						
-		fM27ADistance = fConcreteA1Distance - fConcreteA1Length * 0.5 - 3680. * CLHEP::mm - fM27AGirderLength * 0.5;
+		fM27ADistance = fConcreteA0Distance + fWallThickness * 0.6 + fM27AGirderLength * 0.5;
 		fM30Distance = fConcreteA1Distance + fConcreteA1Length * 0.5 + 250. * CLHEP::mm + fM30GirderLength * 0.5;
 		fM31Distance = fConcreteA1Distance + fConcreteA1Length * 0.5 + 250. * CLHEP::mm + fM30GirderLength + 250. * CLHEP::mm + fM31GirderLength * 0.5;
 		fM32Distance = fConcreteA1Distance - fConcreteA1Length * 0.5 -  (156. * CLHEP::mm) * cos(fThetaElectron) - fM32GirderLength * 0.5;
@@ -331,6 +330,24 @@ void G4ELIMED_DetectorConstruction::ResetDetectorForSetup(int line){
 		fRack2PositionY = (fBeamHeigth - fTransparentRackHeight);
 		fRack2PositionZ = 1518.5 * CLHEP::cm + fTransparentRackLength * 0.5;
 		}
+		
+ 	//Detector Hexapod
+		
+    fHexapodA1PositionX = 0. * CLHEP::cm;
+    fHexapodA1PositionY = -fRomanPotWindowOuterRadius -50. * CLHEP::cm;   
+    fHexapodA1PositionZ = fBeamPipeA0Length + (fRomanPotLength + 2.*fRomanPotWindowLength) * 0.5; 
+       
+    fHexapodA2PositionX = 0. * CLHEP::cm;
+    fHexapodA2PositionY =-fRomanPotWindowOuterRadius -50. * CLHEP::cm -32.8 * CLHEP::cm;
+    fHexapodA2PositionZ = fBeamPipeA0Length + (fRomanPotLength + 2.*fRomanPotWindowLength) * 0.5; 
+    
+    fHexapodB1PositionX = 0. * CLHEP::cm;
+    fHexapodB1PositionY = -fRomanPotWindowOuterRadius -10. * CLHEP::cm;
+    fHexapodB1PositionZ = fBeamPipeA0Length + fRomanPotLength + fRomanPotWindowLength; 
+    
+    fHexapodB2PositionX = 0. * CLHEP::cm;
+    fHexapodB2PositionY = -fRomanPotWindowOuterRadius -10. * CLHEP::cm -32.8 * CLHEP::cm;
+    fHexapodB2PositionZ = fBeamPipeA0Length + fRomanPotLength + fRomanPotWindowLength; 
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo.....
@@ -543,11 +560,11 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
     // Roman pot
     if(bRomanPot){
         G4VisAttributes* fRomaPotVisAttribute = new G4VisAttributes();
-        fRomaPotVisAttribute->SetForceSolid(true);
+        fRomaPotVisAttribute->SetForceSolid(false);
         
         G4Tubs* fRomanPotEnvelopeSolid = new G4Tubs("RomanPotEnvelope",
                                                   0.,
-                                                  fRomanPotOuterRadius,
+                                                  fRomanPotWindowOuterRadius,
                                                   (fRomanPotLength + 2.*fRomanPotWindowLength) * 0.5,
                                                   0*CLHEP::deg,
                                                   360*CLHEP::deg
@@ -1068,7 +1085,7 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
         fRomanPotEnvelopeLogic->SetVisAttributes(fRomanPotEnvelopeVisAttribute);
   	    }
     
-    
+     
     // Girders and Pedestals
     G4VisAttributes* fGirderAttribute; 
     fGirderAttribute = new G4VisAttributes(G4Colour(0.0,1.0,1.0));
@@ -1082,6 +1099,7 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
     G4VisAttributes* fMagnetCoilAttribute; 
     fMagnetCoilAttribute = new G4VisAttributes(G4Colour(0.78,0.1,0.03));
     fMagnetCoilAttribute->SetForceSolid(true);   
+    
     
     // Girders joint Logic Definition    
     G4Box* fGirderJointA0Solid = new G4Box("GirderJointA0",
@@ -1159,6 +1177,8 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
     G4ThreeVector fM30LGirderPositionVector = G4ThreeVector(-fGirderJointLength * 0.5 - fGirderWidth * 0.5, fGirderY,fM30Distance); //support are made of 2 parallel identical girders, this is Left
     G4ThreeVector fM30RGirderPositionVector = G4ThreeVector(+fGirderJointLength * 0.5 + fGirderWidth * 0.5, fGirderY,fM30Distance); // this is right
     
+    if (bModulesOn==true)
+    {
     fM30LGirderPhysical = new G4PVPlacement(0,
                                             fM30LGirderPositionVector,
                                             fM30GirderLogic,
@@ -1230,7 +1250,7 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
                                             fWorldLogic,
                                             false,
                                             0);    
-                                                                                        
+     }                                                                                   
      //M30 CPSEC chamber - Compton Spectrometer vacuum chamber
       
         G4Tubs* fCSPECSolid = new G4Tubs("CSPEC",
@@ -1248,8 +1268,9 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
         
         
         G4ThreeVector fCSPECPositionVector = G4ThreeVector(0.,0.,fM30Distance);
-
-
+    
+    if (bModulesOn==true)
+	{
         fCSPECPhysical = new G4PVPlacement(0,
                                               fCSPECPositionVector,
                                               fCSPECLogic,
@@ -1257,7 +1278,7 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
                                               fWorldLogic,
                                               false,
                                               0);
-         
+     }   
         G4Tubs* fCSPECtWindowSolid = new G4Tubs("fCSPECWindow",
                                                   fBeamPipeA0OuterRadius,
                                                   fCSPECOuterRadius,
@@ -1274,7 +1295,8 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
         G4ThreeVector fCSPECWindow0PositionVector = G4ThreeVector(0.,0.,fM30Distance - fCSPECLength * 0.5 - fCSPECWindowLength * 0.5);
         G4ThreeVector fCSPECWindow1PositionVector = G4ThreeVector(0.,0.,fM30Distance + fCSPECLength * 0.5 + fCSPECWindowLength * 0.5);
         
-
+    if (bModulesOn==true)
+    {
         fCSPECWindow0Physical = new G4PVPlacement(0,
                                                      fCSPECWindow0PositionVector,
                                                      fCSPECWindowLogic,
@@ -1290,6 +1312,7 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
                                                      fWorldLogic,
                                                      false,
                                                      0);
+     }
      //M31
 	G4Box* fM31GirderA0Solid = new G4Box("M31GirderA0",
                                               fGirderWidth * 0.5,
@@ -1313,6 +1336,8 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
     G4ThreeVector fM31LGirderPositionVector = G4ThreeVector(-fGirderJointLength * 0.5 - fGirderWidth * 0.5, fGirderY,fM31Distance); //support are made of 2 parallel identical girders, this is Left
     G4ThreeVector fM31RGirderPositionVector = G4ThreeVector(+fGirderJointLength * 0.5 + fGirderWidth * 0.5, fGirderY,fM31Distance); // this is right
     
+    if (bModulesOn==true)
+    {
     fM31LGirderPhysical = new G4PVPlacement(0,
                                             fM31LGirderPositionVector,
                                             fM31GirderLogic,
@@ -1329,10 +1354,12 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
                                             fWorldLogic,
                                             false,
                                             0);
-    
+    }
     G4ThreeVector fM31Joint1PositionVector = G4ThreeVector(0., fGirderY,fM31Distance - fM31GirderLength * 0.5 + fGirderWidth * 0.5); 
     G4ThreeVector fM31Joint2PositionVector = G4ThreeVector(0., fGirderY,fM31Distance + fM31GirderLength * 0.5 - fGirderWidth * 0.5);
     
+    if (bModulesOn==true)
+    {
     fM31Joint1Physical = new G4PVPlacement(0,
                                             fM31Joint1PositionVector,
                                             fGirderJointLogic,
@@ -1348,10 +1375,13 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
                                             fWorldLogic,
                                             false,
                                             0);
+    }
     //M31 Pedestals
     G4ThreeVector fM31Pedestal1PositionVector = G4ThreeVector(0., fPedestalY,fM31Distance - fM31GirderLength * 0.5 + fPedestalLength * 0.5); 
     G4ThreeVector fM31Pedestal2PositionVector = G4ThreeVector(0., fPedestalY,fM31Distance + fM31GirderLength * 0.5 - fPedestalLength * 0.5);
     
+    if (bModulesOn==true)
+    {
     fM31Pedestal1Physical = new G4PVPlacement(0,
                                             fM31Pedestal1PositionVector,
                                             fPedestalLogic,
@@ -1382,7 +1412,8 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
                                             "M31PedestalInside2",
                                             fWorldLogic,
                                             false,
-                                            0);                                                 
+                                            0);   
+    }                                              
 	if(bLine==1)
 	{
      //M27A
@@ -1408,6 +1439,8 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
     G4ThreeVector fM27ALGirderPositionVector = G4ThreeVector(-fGirderJointLength * 0.5 - fGirderWidth * 0.5, fGirderY,fM27ADistance); //support are made of 2 parallel identical girders, this is Left
     G4ThreeVector fM27ARGirderPositionVector = G4ThreeVector(+fGirderJointLength * 0.5 + fGirderWidth * 0.5, fGirderY,fM27ADistance); // this is right
     
+    if (bModulesOn==true)
+    {
     fM27ALGirderPhysical = new G4PVPlacement(0,
                                             fM27ALGirderPositionVector,
                                             fM27AGirderLogic,
@@ -1424,10 +1457,13 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
                                             fWorldLogic,
                                             false,
                                             0);
+    }
     
     G4ThreeVector fM27AJoint1PositionVector = G4ThreeVector(0., fGirderY,fM27ADistance - fM27AGirderLength * 0.5 + fGirderWidth * 0.5); 
     G4ThreeVector fM27AJoint2PositionVector = G4ThreeVector(0., fGirderY,fM27ADistance + fM27AGirderLength * 0.5 - fGirderWidth * 0.5);
     
+    if (bModulesOn==true)
+    {
     fM27AJoint1Physical = new G4PVPlacement(0,
                                             fM27AJoint1PositionVector,
                                             fGirderJointLogic,
@@ -1443,10 +1479,13 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
                                             fWorldLogic,
                                             false,
                                             0);
+     }
     //M27A Pedestals
     G4ThreeVector fM27APedestal1PositionVector = G4ThreeVector(0., fPedestalY,fM27ADistance - fM27AGirderLength * 0.5 + fPedestalLength * 0.5); 
     G4ThreeVector fM27APedestal2PositionVector = G4ThreeVector(0., fPedestalY,fM27ADistance + fM27AGirderLength * 0.5 - fPedestalLength * 0.5);
     
+    if (bModulesOn==true)
+    {
     fM27APedestal1Physical = new G4PVPlacement(0,
                                             fM27APedestal1PositionVector,
                                             fPedestalLogic,
@@ -1478,8 +1517,9 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
                                             fWorldLogic,
                                             false,
                                             0); 
-    //M27 Magnet
-    
+     }
+                                            
+    //M27 Magnet    
     G4Box* fM27AMagnetA0Solid = new G4Box("M27AMagnetA0",				//external box
                                   		 fM27AMagnetWidth * 0.5,
                                     	 fM27AMagnetHeight * 0.5,
@@ -1533,6 +1573,8 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
     G4ThreeVector fM27AMagnetPositionVector = G4ThreeVector(0., 0.,fM27ADistance);
     G4ThreeVector fM27AMagnetBasePositionVector = G4ThreeVector(0., - fM27AMagnetHeight * 0.5 -(30. * CLHEP::mm) * 0.5,fM27ADistance);
     
+    if (bModulesOn==true)
+    {
     fM27AMagnetPhysical = new G4PVPlacement(0,
                                             fM27AMagnetPositionVector,
                                             fM27AMagnetLogic,
@@ -1548,7 +1590,9 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
                                             fWorldLogic,
                                             false,
                                             0);  
-    //M27A Magnet Coils
+	}
+   
+   //M27A Magnet Coils
    G4Box* fM27AMagnetCoilA0Solid = new G4Box("M27AMagnetCoilA0",		//external box
                                   		 fM27AMagnetCoilWidth * 0.5,
                                     	 fM27AMagnetCoilHeight * 0.5,
@@ -1574,6 +1618,8 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
     G4ThreeVector fM27AMagnetCoilTopPositionVector = G4ThreeVector(0.,fBeamPipeA0OuterRadius + (fM27AMagnetHeight * 0.5 -fBeamPipeA0OuterRadius - 30. * CLHEP::mm)*0.5,fM27ADistance);
     G4ThreeVector fM27AMagnetCoilBottomPositionVector = G4ThreeVector(0.,-fBeamPipeA0OuterRadius - (fM27AMagnetHeight * 0.5 -fBeamPipeA0OuterRadius - 30. * CLHEP::mm)*0.5,fM27ADistance);
     
+    if (bModulesOn==true)
+    {    
     fM27AMagnetCoilTopPhysical = new G4PVPlacement(0,
                                             fM27AMagnetCoilTopPositionVector,
                                             fM27AMagnetCoilLogic,
@@ -1588,6 +1634,7 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
                                             fWorldLogic,
                                             false,
                                             0);      
+    }
     
     //M34
      	
@@ -1623,7 +1670,8 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
     G4ThreeVector fM34LGirderPositionVector = G4ThreeVector(-fGirderJointLength * 0.5 - fGirderWidth * 0.5, fGirderY + 900. *CLHEP::mm,0.); //support are made of 2 parallel identical girders, this is Left
     G4ThreeVector fM34RGirderPositionVector = G4ThreeVector(+fGirderJointLength * 0.5 + fGirderWidth * 0.5, fGirderY + 900. *CLHEP::mm,0.); // this is right
     
-    
+    if (bModulesOn==true)
+    {
     fM34LGirderPhysical = new G4PVPlacement(0,
                                             fM34LGirderPositionVector,
                                             fM34GirderLogic,
@@ -1640,10 +1688,13 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
                                             fM34Logic,
                                             false,
                                             0);
+    }
     
     G4ThreeVector fM34Joint1PositionVector = G4ThreeVector(0., fGirderY + 900. *CLHEP::mm, - fM34GirderLength * 0.5 + fGirderWidth * 0.5); 
     G4ThreeVector fM34Joint2PositionVector = G4ThreeVector(0., fGirderY + 900. *CLHEP::mm, + fM34GirderLength * 0.5 - fGirderWidth * 0.5);
     
+    if (bModulesOn==true)
+    {
     fM34Joint1Physical = new G4PVPlacement(0,
                                            fM34Joint1PositionVector,
                                            fGirderJointLogic,
@@ -1660,13 +1711,14 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
                                             false,
                                             0);
   
-       
-   
+    }
    
     //M34 Pedestals
     G4ThreeVector fM34Pedestal1PositionVector = G4ThreeVector(0., fPedestalY + 900. *CLHEP::mm,- fM34GirderLength * 0.5 + fPedestalLength * 0.5); 
     G4ThreeVector fM34Pedestal2PositionVector = G4ThreeVector(0., fPedestalY + 900. *CLHEP::mm,+ fM34GirderLength * 0.5 - fPedestalLength * 0.5);
     
+    if (bModulesOn==true)
+    {
     fM34Pedestal1Physical = new G4PVPlacement(0,
                                             fM34Pedestal1PositionVector,
                                             fPedestalLogic,
@@ -1698,6 +1750,7 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
                                             fM34Logic,
                                             false,
                                             0);  
+     }
      
      //M34 Complete (girder+joints+pedestals)
      G4ThreeVector fM34PositionVector = G4ThreeVector(fM34X,- 900. *CLHEP::mm,fM34Distance); 
@@ -1707,7 +1760,8 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
     
      fM34RotationMatrix->rotateY(-fThetaM34);
 
-     
+     if (bModulesOn==true)
+     {
      fM34Physical = new G4PVPlacement(fM34RotationMatrix,
                                       fM34PositionVector,
                                       fM34Logic,
@@ -1715,7 +1769,7 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
                                       fWorldLogic,
                                       false,
                                       0); 
-     
+     }
      
     //M34 Dump Magnet 
     
@@ -1778,6 +1832,8 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
          
      fM34MagnetRotationMatrix->rotateX(1.57079);
      
+     if (bModulesOn==true)
+     {
      fM34MagnetPhysical = new G4PVPlacement(fM34MagnetRotationMatrix,
                                       fM34MagnetPositionVector,
                                       fM34MagnetLogic,
@@ -1785,6 +1841,7 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
                                       fWorldLogic,
                                       false,
                                       0); 
+    }
     
     //M34 Dump Magnet Coils
     G4Tubs* fM34MagnetCoilA0Solid = new G4Tubs("M34MagnetCoilA0",		//external box
@@ -1829,7 +1886,9 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
      //G4RotationMatrix *fM34MagnetRotationMatrix = new G4RotationMatrix(0.,0.,0.);
          
      //fM34MagnetRotationMatrix->rotateX(1.57079);
-     
+    
+     if (bModulesOn==true)
+     {
      fM34MagnetCoilTopPhysical = new G4PVPlacement(fM34MagnetRotationMatrix,
                                       fM34MagnetCoilTopPositionVector,
                                       fM34MagnetCoilLogic,
@@ -1845,6 +1904,7 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
                                       fWorldLogic,
                                       false,
                                       0); 
+     }
       
     //M32
     G4Box* fM32Solid = new G4Box("M32",
@@ -1879,7 +1939,8 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
     G4ThreeVector fM32LGirderPositionVector = G4ThreeVector(-fGirderJointLength * 0.5 - fGirderWidth * 0.5, fGirderY + 900. *CLHEP::mm,0.); //support are made of 2 parallel identical girders, this is Left
     G4ThreeVector fM32RGirderPositionVector = G4ThreeVector(+fGirderJointLength * 0.5 + fGirderWidth * 0.5, fGirderY + 900. *CLHEP::mm,0.); // this is right
     
-    
+    if (bModulesOn==true)
+    {
     fM32LGirderPhysical = new G4PVPlacement(0,
                                             fM32LGirderPositionVector,
                                             fM32GirderLogic,
@@ -1896,10 +1957,12 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
                                             fM32Logic,
                                             false,
                                             0);
-    
+    }
     G4ThreeVector fM32Joint1PositionVector = G4ThreeVector(0., fGirderY + 900. *CLHEP::mm,- fM32GirderLength * 0.5 + fGirderWidth * 0.5); 
     G4ThreeVector fM32Joint2PositionVector = G4ThreeVector(0., fGirderY + 900. *CLHEP::mm, + fM32GirderLength * 0.5 - fGirderWidth * 0.5);
     
+    if (bModulesOn==true)
+    {
     fM32Joint1Physical = new G4PVPlacement(0,
                                            fM32Joint1PositionVector,
                                            fGirderJointLogic,
@@ -1916,13 +1979,15 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
                                             false,
                                             0);
   
-       
+     }  
    
    
     //M32 Pedestals
     G4ThreeVector fM32Pedestal1PositionVector = G4ThreeVector(0., fPedestalY+ 900. *CLHEP::mm,- fM32GirderLength * 0.5 + fPedestalLength * 0.5); 
     G4ThreeVector fM32Pedestal2PositionVector = G4ThreeVector(0., fPedestalY+ 900. *CLHEP::mm,+ fM32GirderLength * 0.5 - fPedestalLength * 0.5);
     
+    if (bModulesOn==true)
+    {
     fM32Pedestal1Physical = new G4PVPlacement(0,
                                             fM32Pedestal1PositionVector,
                                             fPedestalLogic,
@@ -1954,6 +2019,7 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
                                             fM32Logic,
                                             false,
                                             0);  
+     }
      
      //M32 Complete (girders+joints+pedestals)                                      
      G4ThreeVector fM32PositionVector = G4ThreeVector(fM32X,- 900. *CLHEP::mm,fM32Distance); 
@@ -1963,7 +2029,8 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
     
      fElectronRotationMatrix->rotateY(-fThetaElectron);
 
-     
+	if (bModulesOn==true)
+	{     
      fM32Physical = new G4PVPlacement(fElectronRotationMatrix,
                                       fM32PositionVector,
                                       fM32Logic,
@@ -1971,6 +2038,7 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
                                       fWorldLogic,
                                       false,
                                       0);        
+     }
      
     //M33
     G4Box* fM33Solid = new G4Box("M33",
@@ -2005,7 +2073,8 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
     G4ThreeVector fM33LGirderPositionVector = G4ThreeVector(-fGirderJointLength * 0.5 - fGirderWidth * 0.5, fGirderY,0.); //support are made of 2 parallel identical girders, this is Left
     G4ThreeVector fM33RGirderPositionVector = G4ThreeVector(+fGirderJointLength * 0.5 + fGirderWidth * 0.5, fGirderY,0.); // this is right
     
-    
+    if (bModulesOn==true)
+    {
     fM33LGirderPhysical = new G4PVPlacement(0,
                                             fM33LGirderPositionVector,
                                             fM33GirderLogic,
@@ -2022,10 +2091,12 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
                                             fM33Logic,
                                             false,
                                             0);
-    
+    }
     G4ThreeVector fM33Joint1PositionVector = G4ThreeVector(0., fGirderY,- fM33GirderLength * 0.5 + fGirderWidth * 0.5); 
     G4ThreeVector fM33Joint2PositionVector = G4ThreeVector(0., fGirderY, + fM33GirderLength * 0.5 - fGirderWidth * 0.5);
     
+    if (bModulesOn==true)
+    {
     fM33Joint1Physical = new G4PVPlacement(0,
                                            fM33Joint1PositionVector,
                                            fGirderJointLogic,
@@ -2041,14 +2112,14 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
                                             fM33Logic,
                                             false,
                                             0);
-  
-       
-   
+	}
    
     //M33 Pedestals
     G4ThreeVector fM33Pedestal1PositionVector = G4ThreeVector(0., fPedestalY,- fM33GirderLength * 0.5 + fPedestalLength * 0.5); 
     G4ThreeVector fM33Pedestal2PositionVector = G4ThreeVector(0., fPedestalY,+ fM33GirderLength * 0.5 - fPedestalLength * 0.5);
     
+    if (bModulesOn==true)
+    {
     fM33Pedestal1Physical = new G4PVPlacement(0,
                                             fM33Pedestal1PositionVector,
                                             fPedestalLogic,
@@ -2080,6 +2151,7 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
                                             fM33Logic,
                                             false,
                                             0);  
+     }
      
      //M33 Complete (girders+joints+pedestals)                                      
      G4ThreeVector fM33PositionVector = G4ThreeVector(fM33X,0.,fM33Distance); 
@@ -2089,7 +2161,8 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
     
      //fElectronRotationMatrix->rotateY(-fThetaElectron);
 
-     
+     if (bModulesOn==true)
+     {
      fM33Physical = new G4PVPlacement(fElectronRotationMatrix,
                                       fM33PositionVector,
                                       fM33Logic,
@@ -2097,6 +2170,7 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
                                       fWorldLogic,
                                       false,
                                       0); 
+     }
      
      }
     
@@ -2108,7 +2182,6 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
         fDetectorVisAttribute->SetForceSolid(false);
         
         // Tube for hole subtraction in screen
-        
         G4Tubs* fBeamPipeHoleSolid = new G4Tubs("BeamPipeHoleSolid",
                                               0.,
                                               fBeamPipeA0OuterRadius,
@@ -2117,7 +2190,6 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
                                               360*CLHEP::deg);
         
         // Screen 
-
         G4Box* fTransparentDetectorSolidBox = new G4Box("TransparentDetector",
                                                      fTransparentDetectorWidth * 0.5,
                                                      fTransparentDetectorHeight * 0.5,
@@ -2148,7 +2220,7 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
                                                          false,
                                                          0);
         
-        fTransparentDetectorPositionVector = G4ThreeVector(0.,fRoomShiftY,fBeamPipeA0Length - fTransparentDetectorLength * 0.5 - 5.0 * CLHEP::mm); //5mm shift on z-axis to avoid overlap with M32
+        fTransparentDetectorPositionVector = G4ThreeVector(0.,fRoomShiftY,fBeamPipeA0Length - fTransparentDetectorLength * 0.5 - 100.0 * CLHEP::cm); //100 cm shift on z-axis to avoid overlap with M32
         
         fTransparentDetectorPhysical = new G4PVPlacement(0,
                                                          fTransparentDetectorPositionVector,
@@ -2239,6 +2311,60 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
                                                          fWorldLogic,
                                                          false,
                                                          0); 
+    	
+    	//Transparent Detector for Hexapod dose evaluation 
+       G4Box* fTransparentDetectorHexapodSolid = new G4Box("TransparentDetectorHexapodSolid",
+                                                     5 * CLHEP::cm,
+                                                     5 * CLHEP::cm,
+                                                     5 * CLHEP::cm);
+       
+        fTransparentDetectorHexapodLogic = new G4LogicalVolume(fTransparentDetectorHexapodSolid,
+                                                        fWorldMaterial,
+                                                        "TransparentDetectorHexapod");
+       
+        fTransparentDetectorRack1Logic->SetVisAttributes(fDetectorVisAttribute);
+
+        G4ThreeVector fTransparentDetectorHexapodPositionVector;
+        
+        fTransparentDetectorHexapodPositionVector = G4ThreeVector(fHexapodA1PositionX,fHexapodA1PositionY,fHexapodA1PositionZ);
+		
+        fTransparentDetectorHexapodPhysical = new G4PVPlacement(0,
+                                                         fTransparentDetectorHexapodPositionVector,
+                                                         fTransparentDetectorHexapodLogic,
+                                                         "TransparentDetectorHexapodA1",
+                                                         fWorldLogic,
+                                                         false,
+                                                         0);   
+
+        fTransparentDetectorHexapodPositionVector = G4ThreeVector(fHexapodA2PositionX,fHexapodA2PositionY,fHexapodA2PositionZ);
+		
+        fTransparentDetectorHexapodPhysical = new G4PVPlacement(0,
+                                                         fTransparentDetectorHexapodPositionVector,
+                                                         fTransparentDetectorHexapodLogic,
+                                                         "TransparentDetectorHexapodA2",
+                                                         fWorldLogic,
+                                                         false,
+                                                         1); 
+       
+        fTransparentDetectorHexapodPositionVector = G4ThreeVector(fHexapodB1PositionX,fHexapodB1PositionY,fHexapodB1PositionZ);
+		
+        fTransparentDetectorHexapodPhysical = new G4PVPlacement(0,
+                                                         fTransparentDetectorHexapodPositionVector,
+                                                         fTransparentDetectorHexapodLogic,
+                                                         "TransparentDetectorHexapodAB1",
+                                                         fWorldLogic,
+                                                         false,
+                                                         2);    
+                                                         
+        fTransparentDetectorHexapodPositionVector = G4ThreeVector(fHexapodB2PositionX,fHexapodB2PositionY,fHexapodB2PositionZ);
+		
+        fTransparentDetectorHexapodPhysical = new G4PVPlacement(0,
+                                                         fTransparentDetectorHexapodPositionVector,
+                                                         fTransparentDetectorHexapodLogic,
+                                                         "TransparentDetectorHexapodB2",
+                                                         fWorldLogic,
+                                                         false,
+                                                         3);                                                                         
     }
 
     // Pb disks
@@ -2272,7 +2398,9 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
     fPbDiskM30Logic->SetVisAttributes(fPbDiskVisAttribute);
       
     G4ThreeVector fPbDiskM30PositionVector = G4ThreeVector(0.,0.,fM30Distance + fCSPECLength * 0.5 + fCSPECWindowLength + fPbDiskLength);
-    
+      
+        if (bModulesOn==true)
+        {
     fPbDiskM30Physical = new G4PVPlacement(0,
                                         fPbDiskM30PositionVector,
                                         fPbDiskM30Logic,
@@ -2280,6 +2408,7 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
                                         fWorldLogic,
                                         false,
                                         0);
+        }
     
     
     if(PbDisks == 1 || PbDisks == 3){
@@ -2317,7 +2446,8 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
        
         fTransparentDetectorRack1Logic->SetSensitiveDetector(vDetector);
         fTransparentDetectorRack2Logic->SetSensitiveDetector(vDetector);
-
+		
+		fTransparentDetectorHexapodLogic->SetSensitiveDetector(vDetector);
         //fCollimatorLogic->SetSensitiveDetector(vDetector);
     }
 #endif

@@ -76,6 +76,9 @@ private:
     G4Material* fBeamPipeVacuum;   
     
     G4int bLine; 
+    
+    G4double fCollimatorCenterDistance;
+    
     // Beam pipe
 private:
     G4bool bBeamPipe;
@@ -243,7 +246,12 @@ private:
     G4VPhysicalVolume* fCollimatorA1Physical;
     
     //Girders and Pedestals
+public:
+	 void SetModules(G4int var) {bModulesOn = var;};    
+
 private:
+	G4bool bModulesOn;
+
     G4double fGirderHeight;
     G4double fGirderWidth;
     G4double fGirderThickness;
@@ -419,7 +427,7 @@ private:
     //G4Solid* fBeamPipeHoleSolid;
     //G4LogicalVolume* fBeamPipeHoleLogic;
       
-    //Detector racks //Variables Added
+    //Detector racks
 	G4double fTransparentRackWidth;
 	G4double fTransparentRackLength;
 	G4double fTransparentRackHeight;
@@ -435,6 +443,25 @@ private:
     G4double fRack2PositionY;
     G4double fRack2PositionZ;
     
+    //detectors for Hexapod dose evalaution 
+    G4double fHexapodA1PositionX;
+    G4double fHexapodA1PositionY;   
+    G4double fHexapodA1PositionZ; 
+       
+    G4double fHexapodA2PositionX;
+    G4double fHexapodA2PositionY;
+    G4double fHexapodA2PositionZ;
+    
+    G4double fHexapodB1PositionX;
+    G4double fHexapodB1PositionY;
+    G4double fHexapodB1PositionZ;
+    
+    G4double fHexapodB2PositionX;
+    G4double fHexapodB2PositionY;
+    G4double fHexapodB2PositionZ;
+    
+    G4LogicalVolume* fTransparentDetectorHexapodLogic;
+	G4VPhysicalVolume* fTransparentDetectorHexapodPhysical;    
     
     // Transparent detector
 public:

@@ -69,6 +69,9 @@ class G4ELIMED_DetectorConstructionMessenger: public G4UImessenger
     G4UIcmdWithAnInteger* fCollimatorSetupCmd;
     
     G4UIcmdWithAnInteger* fPbDisksCmd;
+      
+    G4UIcmdWithAnInteger* fModulesOnCmd;
+    
 
 };
 

@@ -110,6 +110,11 @@ G4ELIMED_DetectorConstructionMessenger::G4ELIMED_DetectorConstructionMessenger(G
     fCollimatorRandDisplSigmaCmd->SetRange("randsigma>=0.0");
     fCollimatorRandDisplSigmaCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
 
+    fModulesOnCmd = new G4UIcmdWithAnInteger("/line/modules",this);
+    fModulesOnCmd->SetGuidance("Set modules On (1), Off (0)");
+    fModulesOnCmd->SetParameterName("modules",false);
+    fModulesOnCmd->SetRange("modules>=0");
+    fModulesOnCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
@@ -127,6 +132,7 @@ G4ELIMED_DetectorConstructionMessenger::~G4ELIMED_DetectorConstructionMessenger(
     delete fCollimatorRandDisplCmd;
     delete fCollimatorRandDisplMeanCmd;
     delete fCollimatorRandDisplSigmaCmd;
+    delete fModulesOnCmd;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
@@ -163,6 +169,8 @@ void G4ELIMED_DetectorConstructionMessenger::SetNewValue(G4UIcommand * command,G
     if( command == fCollimatorRandDisplSigmaCmd )
     { fDetectorTarget->SetCollRandDisplSigma(fCollimatorRandDisplSigmaCmd->GetNewDoubleValue(newValue));}
    
+    if( command == fModulesOnCmd )
+    { fDetectorTarget->SetModules(fModulesOnCmd->GetNewIntValue(newValue));}   
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
