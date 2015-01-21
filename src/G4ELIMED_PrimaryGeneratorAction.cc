@@ -58,7 +58,7 @@ G4ELIMED_PrimaryGeneratorAction::G4ELIMED_PrimaryGeneratorAction()
     fParticleGPS->SetParticleDefinition(particle);
 
     fMessenger = new G4ELIMED_PrimaryGeneratorActionMessenger(this);
-    fReadFromFile = false;
+    //fReadFromFile = false;
     // Position distribution
     G4SPSPosDistribution *vPosDist = fParticleGPS->GetCurrentSource()->GetPosDist() ;
     vPosDist->SetPosDisType("Beam");
@@ -74,7 +74,7 @@ G4ELIMED_PrimaryGeneratorAction::G4ELIMED_PrimaryGeneratorAction()
     // Energy distribution
     G4SPSEneDistribution *vEneDist = fParticleGPS->GetCurrentSource()->GetEneDist() ;
     vEneDist->SetEnergyDisType("Mono");
-    vEneDist->SetMonoEnergy(2.5 * CLHEP::MeV);
+    vEneDist->SetMonoEnergy(5. * CLHEP::MeV);
     
     
 //    G4AutoLock lock(&G4ELIMED_PrimaryGeneratorActionMutex);

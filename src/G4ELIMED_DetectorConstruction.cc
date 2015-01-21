@@ -2439,12 +2439,7 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
     
     
 #ifndef G4MULTITHREADED
-   G4MultiFunctionalDetector* multisd = new G4MultiFunctionalDetector("/multisd");
-   G4VPrimitiveScorer* dosedet = new G4PSDoseDeposit("dose");
-   multisd->RegisterPrimitive(dosedet);
-   G4SDManager::GetSDMpointer()->AddNewDetector(multisd);
-   fTransparentDetectorBoxLogic->SetSensitiveDetector(multisd);
-    if(bTransparentDetector){
+       if(bTransparentDetector){
         G4VSensitiveDetector* vDetector = new G4ELIMED_SensitiveDetector("/det");
         G4SDManager::GetSDMpointer()->AddNewDetector(vDetector);
         
@@ -2458,6 +2453,13 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
 	fTransparentDetectorHexapodLogic->SetSensitiveDetector(vDetector);
         //fCollimatorLogic->SetSensitiveDetector(vDetector);
     }
+    
+       G4MultiFunctionalDetector* multisd = new G4MultiFunctionalDetector("/multisd");
+   G4VPrimitiveScorer* dosedet = new G4PSDoseDeposit("dose");
+   multisd->RegisterPrimitive(dosedet);
+   SetSensitiveDetector("TransparentDetectorHexapod",multisd);
+   
+
 #endif
     
     return fWorldPhysical;
@@ -2467,11 +2469,6 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
 
 #ifdef G4MULTITHREADED
 void G4ELIMED_DetectorConstruction::ConstructSDandField(){
-   G4MultiFunctionalDetector* multisd = new G4MultiFunctionalDetector("/multisd");
-   G4VPrimitiveScorer* dosedet = new G4PSDoseDeposit("dose");
-   multisd->RegisterPrimitive(dosedet);
-   G4SDManager::GetSDMpointer()->AddNewDetector(multisd);
-   fTransparentDetectorBoxLogic->SetSensitiveDetector(multisd);
     
     if(bTransparentDetector){
         G4VSensitiveDetector* vDetector = new G4ELIMED_SensitiveDetector("/det");
@@ -2484,8 +2481,15 @@ void G4ELIMED_DetectorConstruction::ConstructSDandField(){
         fTransparentDetectorRack1Logic->SetSensitiveDetector(vDetector);
         fTransparentDetectorRack2Logic->SetSensitiveDetector(vDetector);
 
+	fTransparentDetectorHexapodLogic->SetSensitiveDetector(vDetector);
         //fCollimatorLogic->SetSensitiveDetector(vDetector);
     }
+    
+       G4MultiFunctionalDetector* multisd = new G4MultiFunctionalDetector("/multisd");
+   G4VPrimitiveScorer* dosedet = new G4PSDoseDeposit("dose");
+   multisd->RegisterPrimitive(dosedet);
+   SetSensitiveDetector("TransparentDetectorHexapod",multisd);
+
 }
 #else
 void G4ELIMED_DetectorConstruction::ConstructSDandField(){
