@@ -23,44 +23,86 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
+// $Id: G4ELIMED_Run.cc 68058 2013-03-13 14:47:43Z gcosmo $
 //
+/// \file G4ELIMED_Run.cc
+/// \brief Implementation of the G4ELIMED_Run class
 
-#ifdef G4MULTITHREADED
-#include "G4ELIMED_UserActionInitialization.hh"
-#include "G4ELIMED_PrimaryGeneratorAction.hh"
-#include "G4ELIMED_TrackingAction.hh"
-#include "G4ELIMED_StackingAction.hh"
-#include "G4ELIMED_RunAction.hh"
-#include "G4ELIMED_EventAction.hh"
-#include "G4GeneralParticleSource.hh"
+#include "G4ELIMED_Run.hh"
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-G4ELIMED_UserActionInitialization::G4ELIMED_UserActionInitialization() {
-    masterGPS = new G4GeneralParticleSource();
-}
+#include "G4RunManager.hh"
+#include "G4Event.hh"
+
+#include "G4SDManager.hh"
+#include "G4HCofThisEvent.hh"
+#include "G4THitsMap.hh"
+#include "G4SystemOfUnits.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-G4ELIMED_UserActionInitialization::~G4ELIMED_UserActionInitialization() {
-    delete masterGPS;
-}
+G4ELIMED_Run::G4ELIMED_Run()
+ : G4Run(), 
+   fCollID_dose(-1),
+   fPrintModulo(10000),
+   fGoodEvents(0),
+   fSumDose(0.)
+{ }
 
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void G4ELIMED_UserActionInitialization::Build() const {
-    SetUserAction(new G4ELIMED_PrimaryGeneratorAction());
-    SetUserAction(new G4ELIMED_EventAction());
-    SetUserAction(new G4ELIMED_StackingAction());
-    SetUserAction(new G4ELIMED_RunAction());
-    SetUserAction(new G4ELIMED_TrackingAction());
-}
+G4ELIMED_Run::~G4ELIMED_Run()
+{ }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void G4ELIMED_UserActionInitialization::BuildForMaster() const {
-    SetUserAction(new G4ELIMED_RunAction());
-}
+void G4ELIMED_Run::RecordEvent(const G4Event* event)
+{
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
-#endif
+    G4SDManager* SDman = G4SDManager::GetSDMpointer();
+    
+    
+    //Hit Detection System
+   
+  if ( fCollID_dose < 0 ) {
+  G4String G4ELIMED_SensitiveDetectorName;
+        if(SDman->FindSensitiveDetector(G4ELIMED_SensitiveDetectorName="multisd/dose",0)){
+           fCollID_dose  =  SDman->GetCollectionID(G4ELIMED_SensitiveDetectorName="det/collection");
+        }
+       }
+
+        if(fCollID_dose > 0)   {      
+  //Hits collections
+  //  
+  G4HCofThisEvent* HCE = event->GetHCofThisEvent();
+  if(!HCE) return;
+               
+  G4THitsMap<G4double>* evtMap = 
+    static_cast<G4THitsMap<G4double>*>(HCE->GetHC(fCollID_dose));
+               
+  std::map<G4int,G4double*>::iterator itr;
+  
+  //Dose deposit in patient
+  //
+  G4double dose = 0.;
+               
+  for (itr = evtMap->GetMap()->begin(); itr != evtMap->GetMap()->end(); itr++) {
+    dose = *(itr->second);
+  }
+  fSumDose += dose;
+  }
+  G4Run::RecordEvent(event);      
+}  
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void G4ELIMED_Run::Merge(const G4Run* aRun)
+{
+  const G4ELIMED_Run* localRun = static_cast<const G4ELIMED_Run*>(aRun);
+  fGoodEvents += localRun->fGoodEvents;
+  fSumDose    += localRun->fSumDose;
+
+  G4Run::Merge(aRun); 
+} 
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

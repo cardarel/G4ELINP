@@ -23,44 +23,44 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
+// $Id: G4ELIMED_Run.hh 68058 2013-03-13 14:47:43Z gcosmo $
 //
+/// \file G4ELIMED_Run.hh
+/// \brief Definition of the G4ELIMED_Run class
 
-#ifdef G4MULTITHREADED
-#include "G4ELIMED_UserActionInitialization.hh"
-#include "G4ELIMED_PrimaryGeneratorAction.hh"
-#include "G4ELIMED_TrackingAction.hh"
-#include "G4ELIMED_StackingAction.hh"
-#include "G4ELIMED_RunAction.hh"
-#include "G4ELIMED_EventAction.hh"
-#include "G4GeneralParticleSource.hh"
+#ifndef G4ELIMED_Run_h
+#define G4ELIMED_Run_h 1
+
+#include "G4Run.hh"
+#include "globals.hh"
+
+/// Run class
+///
+/// In RecordEvent() there is collected information event per event 
+/// from Hits Collections, and accumulated statistic for the run 
+
+class G4ELIMED_Run : public G4Run
+{
+  public:
+    G4ELIMED_Run();
+    virtual ~G4ELIMED_Run();
+
+    virtual void RecordEvent(const G4Event*);
+    virtual void Merge(const G4Run*);
+    
+  public:
+    G4int GetNbGoodEvents() const { return fGoodEvents; }
+    G4double GetSumDose()   const { return fSumDose; }    
+    
+  private:
+    G4int fCollID_dose;   
+    G4int fPrintModulo;
+    G4int fGoodEvents;
+    G4double fSumDose;         
+};
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-G4ELIMED_UserActionInitialization::G4ELIMED_UserActionInitialization() {
-    masterGPS = new G4GeneralParticleSource();
-}
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-G4ELIMED_UserActionInitialization::~G4ELIMED_UserActionInitialization() {
-    delete masterGPS;
-}
-
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void G4ELIMED_UserActionInitialization::Build() const {
-    SetUserAction(new G4ELIMED_PrimaryGeneratorAction());
-    SetUserAction(new G4ELIMED_EventAction());
-    SetUserAction(new G4ELIMED_StackingAction());
-    SetUserAction(new G4ELIMED_RunAction());
-    SetUserAction(new G4ELIMED_TrackingAction());
-}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
-
-void G4ELIMED_UserActionInitialization::BuildForMaster() const {
-    SetUserAction(new G4ELIMED_RunAction());
-}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 #endif
+
+    

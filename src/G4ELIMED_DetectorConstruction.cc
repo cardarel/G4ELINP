@@ -70,6 +70,9 @@
 #include "G4Trd.hh"
 #include "G4SubtractionSolid.hh"
 
+#include "G4MultiFunctionalDetector.hh"
+#include "G4PSDoseDeposit.hh"
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 G4ELIMED_DetectorConstruction::G4ELIMED_DetectorConstruction():fWorldLogic(0){
@@ -2436,6 +2439,11 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
     
     
 #ifndef G4MULTITHREADED
+   G4MultiFunctionalDetector* multisd = new G4MultiFunctionalDetector("/multisd");
+   G4VPrimitiveScorer* dosedet = new G4PSDoseDeposit("dose");
+   multisd->RegisterPrimitive(dosedet);
+   G4SDManager::GetSDMpointer()->AddNewDetector(multisd);
+   fTransparentDetectorBoxLogic->SetSensitiveDetector(multisd);
     if(bTransparentDetector){
         G4VSensitiveDetector* vDetector = new G4ELIMED_SensitiveDetector("/det");
         G4SDManager::GetSDMpointer()->AddNewDetector(vDetector);
@@ -2447,7 +2455,7 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
         fTransparentDetectorRack1Logic->SetSensitiveDetector(vDetector);
         fTransparentDetectorRack2Logic->SetSensitiveDetector(vDetector);
 		
-		fTransparentDetectorHexapodLogic->SetSensitiveDetector(vDetector);
+	fTransparentDetectorHexapodLogic->SetSensitiveDetector(vDetector);
         //fCollimatorLogic->SetSensitiveDetector(vDetector);
     }
 #endif
@@ -2459,6 +2467,12 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
 
 #ifdef G4MULTITHREADED
 void G4ELIMED_DetectorConstruction::ConstructSDandField(){
+   G4MultiFunctionalDetector* multisd = new G4MultiFunctionalDetector("/multisd");
+   G4VPrimitiveScorer* dosedet = new G4PSDoseDeposit("dose");
+   multisd->RegisterPrimitive(dosedet);
+   G4SDManager::GetSDMpointer()->AddNewDetector(multisd);
+   fTransparentDetectorBoxLogic->SetSensitiveDetector(multisd);
+    
     if(bTransparentDetector){
         G4VSensitiveDetector* vDetector = new G4ELIMED_SensitiveDetector("/det");
         G4SDManager::GetSDMpointer()->AddNewDetector(vDetector);

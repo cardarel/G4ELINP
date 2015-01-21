@@ -58,7 +58,7 @@ G4ELIMED_PrimaryGeneratorAction::G4ELIMED_PrimaryGeneratorAction()
     fParticleGPS->SetParticleDefinition(particle);
 
     fMessenger = new G4ELIMED_PrimaryGeneratorActionMessenger(this);
-    
+    fReadFromFile = false;
     // Position distribution
     G4SPSPosDistribution *vPosDist = fParticleGPS->GetCurrentSource()->GetPosDist() ;
     vPosDist->SetPosDisType("Beam");

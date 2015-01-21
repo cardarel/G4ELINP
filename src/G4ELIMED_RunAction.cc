@@ -33,6 +33,7 @@
 
 #include "G4ELIMED_RunActionMessenger.hh"
 #include "G4ELIMED_Analysis.hh"
+#include "G4ELIMED_Run.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -66,6 +67,19 @@ fMessenger(0){
     analysisManager->CreateNtupleIColumn("trackID");
     analysisManager->CreateNtupleIColumn("trackIDP");
     analysisManager->FinishNtuple();
+
+  //add new units for dose
+  // 
+  const G4double milligray = 1.e-3*gray;
+  const G4double microgray = 1.e-6*gray;
+  const G4double nanogray  = 1.e-9*gray;  
+  const G4double picogray  = 1.e-12*gray;
+   
+  new G4UnitDefinition("milligray", "milliGy" , "Dose", milligray);
+  new G4UnitDefinition("microgray", "microGy" , "Dose", microgray);
+  new G4UnitDefinition("nanogray" , "nanoGy"  , "Dose", nanogray);
+  new G4UnitDefinition("picogray" , "picoGy"  , "Dose", picogray);       
+
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -76,6 +90,11 @@ G4ELIMED_RunAction::~G4ELIMED_RunAction(){
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+G4Run* G4ELIMED_RunAction::GenerateRun()
+{ return new G4ELIMED_Run; }
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
 void G4ELIMED_RunAction::BeginOfRunAction(const G4Run* /*run*/){
     G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
     analysisManager->OpenFile(fFileName);
@@ -83,11 +102,45 @@ void G4ELIMED_RunAction::BeginOfRunAction(const G4Run* /*run*/){
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void G4ELIMED_RunAction::EndOfRunAction(const G4Run* /*run*/){
+void G4ELIMED_RunAction::EndOfRunAction(const G4Run* run){
     G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();    
     analysisManager->Write();
     analysisManager->CloseFile();
     
+    
+      G4int nofEvents = run->GetNumberOfEvent();
+  if (nofEvents == 0) return;
+  
+
+  //results
+  //
+  const G4ELIMED_Run* g4eliRun = static_cast<const G4ELIMED_Run*>(run);
+  G4int nbGoodEvents = g4eliRun->GetNbGoodEvents();
+  G4double sumDose   = g4eliRun->GetSumDose();                           
+        
+  //print
+  //
+  if (IsMaster())
+  {
+    G4cout
+     << G4endl
+     << "--------------------End of Global Run-----------------------"
+     << G4endl
+     << "  The run was " << nofEvents << " events ";
+  }
+  else
+  {
+    G4cout
+     << G4endl
+     << "--------------------End of Local Run------------------------"
+     << G4endl
+     << "  The run was " << nofEvents << " events ";
+  }      
+  G4cout
+     << "; Nb of 'good' events: " << nbGoodEvents  << G4endl
+     << " Total dose in solid : " << G4BestUnit(sumDose,"Dose") << G4endl  
+     << "------------------------------------------------------------" << G4endl 
+     << G4endl;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
