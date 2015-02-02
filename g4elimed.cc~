@@ -91,13 +91,16 @@ int main(int argc,char** argv)
     // Activate UI-command base scorer
     G4ScoringManager * scManager = G4ScoringManager::GetScoringManager();
     scManager->SetVerboseLevel(0);
+
+    G4int seed = 0;
+    if(argc>3){
+        seed = atoi(argv[3]);
+    };
     
     // Choose the Random engine
-#ifndef G4MULTITHREADED
-    G4Random::setTheEngine(new CLHEP::RanecuEngine);
-    G4int seed = 0;
+    CLHEP::RanluxEngine defaultEngine( 1234567, 4 );
+    G4Random::setTheEngine(new defaultEngine);
     G4Random::setTheSeed( seed );
-#endif
     
     // Set mandatory initialization classes
     runManager->SetUserInitialization(new G4ELIMED_DetectorConstruction);

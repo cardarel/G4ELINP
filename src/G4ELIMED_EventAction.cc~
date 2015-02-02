@@ -109,9 +109,9 @@ void G4ELIMED_EventAction::EndOfEventAction(const G4Event* aEvent){
             analysisManager->FillNtupleDColumn(0,2, aHitBP->GetPos().x() / CLHEP::mm);
             analysisManager->FillNtupleDColumn(0,3, aHitBP->GetPos().y() / CLHEP::mm);
             analysisManager->FillNtupleDColumn(0,4, aHitBP->GetPos().z() / CLHEP::mm);
-            analysisManager->FillNtupleDColumn(0,5, aHitBP->GetMom().x());
-            analysisManager->FillNtupleDColumn(0,6, aHitBP->GetMom().y());
-            analysisManager->FillNtupleDColumn(0,7, aHitBP->GetMom().z());
+            analysisManager->FillNtupleDColumn(0,5, aHitBP->GetMom().norm().x());
+            analysisManager->FillNtupleDColumn(0,6, aHitBP->GetMom().norm().y());
+            analysisManager->FillNtupleDColumn(0,7, aHitBP->GetMom().norm().z());
             analysisManager->FillNtupleDColumn(0,8, aHitBP->GetTime() / CLHEP::ns);
             analysisManager->FillNtupleIColumn(0,9, aHitBP->GetType());
             analysisManager->FillNtupleIColumn(0,10, aHitBP->GetZ());

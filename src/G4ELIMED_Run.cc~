@@ -88,11 +88,7 @@ void G4ELIMED_Run::RecordEvent(const G4Event* event)
   	fSumDose += dose;
    }
 
-    
-  if(fSumDose>0.){
-  G4cout << "DOSE " << fSumDose << std::endl;
-  }
-  while(!getchar());
+   
   G4Run::RecordEvent(event);      
 }  
 

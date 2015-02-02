@@ -88,6 +88,7 @@ void G4ELIMED_Run::RecordEvent(const G4Event* event)
   	fSumDose += dose;
    }
 
+   
   G4Run::RecordEvent(event);      
 }  
 

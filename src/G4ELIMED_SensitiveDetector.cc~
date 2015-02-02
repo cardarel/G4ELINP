@@ -83,7 +83,7 @@ bool G4ELIMED_SensitiveDetector::ProcessHits(G4Step *aStep,G4TouchableHistory* /
     }
     
     G4ThreeVector pos = preStepPoint->GetPosition();
-    G4ThreeVector mom = preStepPoint->GetMomentumDirection();
+    G4ThreeVector mom = preStepPoint->GetMomentum();
     
     G4ELIMED_SensitiveDetectorHit* aHit = new G4ELIMED_SensitiveDetectorHit();
 
