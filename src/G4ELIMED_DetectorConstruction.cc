@@ -283,7 +283,11 @@ void G4ELIMED_DetectorConstruction::ResetDetectorForSetup(int line){
         fM34MagnetCoilThetaEnd = 3.14159 * CLHEP::rad * 0.5 - fThetaElectron;
         fM34MagnetCoilHoleThetaStart = -3.14159 * CLHEP::rad + fThetaElectron + (110./fM34MagnetRadius)*CLHEP::rad;
         fM34MagnetCoilHoleThetaEnd = 3.14159 * CLHEP::rad * 0.5 - fThetaElectron - (195./fM34MagnetRadius)*CLHEP::rad;
-
+		
+	  // Detector SCREEN HE
+   	   fTransparentDetectorWidth = 554. * CLHEP::cm; //edit to fit the smaller LE room (278cm on the right)
+  	   fTransparentDetectorHeight = 500.  * CLHEP::cm; //edit to fit the room height
+ 	   fTransparentDetectorLength = 1. * CLHEP::cm;
 		
 		}
 		else
@@ -291,12 +295,14 @@ void G4ELIMED_DetectorConstruction::ResetDetectorForSetup(int line){
 		fM27ADistance = fConcreteA1Distance - fConcreteA1Length * 0.5 - 3683. * CLHEP::mm - fM27AGirderLength * 0.5;
 		fM30Distance = fConcreteA1Distance + fConcreteA1Length * 0.5 + 250. * CLHEP::mm + fM30GirderLength * 0.5;
 		fM31Distance = fConcreteA1Distance + fConcreteA1Length * 0.5 + 250. * CLHEP::mm + fM30GirderLength + 250. * CLHEP::mm + fM31GirderLength * 0.5;
+		
+		// Detector SCREEN LE
+   	  	fTransparentDetectorWidth = 554. * CLHEP::cm; //edit to fit the smaller LE room (278cm on the right)
+  	  	fTransparentDetectorHeight = 500.  * CLHEP::cm; //edit to fit the room height
+   	 	fTransparentDetectorLength = 1. * CLHEP::cm;
 		}
 
-    // Detector SCREEN
-    fTransparentDetectorWidth = 554. * CLHEP::cm; //edit to fit the smaller LE room (278cm on the right)
-    fTransparentDetectorHeight = 500.  * CLHEP::cm; //edit to fit the room height
-    fTransparentDetectorLength = 1. * CLHEP::cm;
+
     
     fPbDiskLength = 5. * CLHEP::cm;
     fPbDiskOuterRadius = 30. * CLHEP::cm;
@@ -2246,17 +2252,22 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
         
         
         
+        G4Box* fTransparentDetectorSolidBox1 = new G4Box("TransparentDetectorBox",
+                                                     fRoomWidth * 0.5,
+                                                     fTransparentDetectorHeight * 0.5,
+                                                     fTransparentDetectorLength * 0.5);
         
-        fTransparentDetectorBoxLogic = new G4LogicalVolume(fTransparentDetectorSolidBox,
+        fTransparentDetectorBoxLogic = new G4LogicalVolume(fTransparentDetectorSolidBox1,
                                                            fWorldMaterial,
                                                            "TransparentDetectorBox");
         
         G4ThreeVector fTransparentDetectorBoxPositionVector;
 
 
-        fTransparentDetectorBoxPositionVector = G4ThreeVector(0.,
+        fTransparentDetectorBoxPositionVector = G4ThreeVector(fRoomShiftX,
         													fRoomShiftY,	
         													fBeamPipeA0Length + (fRomanPotLength + 2.*fRomanPotWindowLength) + fBeamPipeA2Length + fTransparentDetectorLength * 0.5);
+        
         
         fTransparentDetectorBoxPhysical = new G4PVPlacement(0,
                                                             fTransparentDetectorBoxPositionVector,
@@ -2266,6 +2277,22 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
                                                             false,
                                                             1);
 
+        //G4ThreeVector fTransparentDetectorBoxPositionVector;
+/*
+
+        fTransparentDetectorBoxPositionVector = G4ThreeVector(fRoomShiftX,
+        													fRoomShiftY,	
+        													fConcreteA0Distance + fWallThickness * 0.5 + fRoomLength + fWallThickness + fTransparentDetectorLength * 0.5);
+        
+        
+        fTransparentDetectorBoxPhysical = new G4PVPlacement(0,
+                                                            fTransparentDetectorBoxPositionVector,
+                                                            fTransparentDetectorBoxLogic,
+                                                            "TransparentDetectorBox",
+                                                            fWorldLogic,
+                                                            false,
+                                                            2);
+*/
         //fTransparentDetectorLogic->SetVisAttributes(G4VisAttributes::GetInvisible()); // EDIT PAOLO detector set visible
         //fTransparentDetectorBoxLogic->SetVisAttributes(G4VisAttributes::GetInvisible());
     
@@ -2443,14 +2470,14 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
         G4VSensitiveDetector* vDetector = new G4ELIMED_SensitiveDetector("/det");
         G4SDManager::GetSDMpointer()->AddNewDetector(vDetector);
         
-        fTransparentDetectorLogic->SetSensitiveDetector(vDetector);
+        //fTransparentDetectorLogic->SetSensitiveDetector(vDetector);
 
         fTransparentDetectorBoxLogic->SetSensitiveDetector(vDetector);
        
-        fTransparentDetectorRack1Logic->SetSensitiveDetector(vDetector);
-        fTransparentDetectorRack2Logic->SetSensitiveDetector(vDetector);
+        //fTransparentDetectorRack1Logic->SetSensitiveDetector(vDetector);
+        //fTransparentDetectorRack2Logic->SetSensitiveDetector(vDetector);
 		
-	fTransparentDetectorHexapodLogic->SetSensitiveDetector(vDetector);
+	//fTransparentDetectorHexapodLogic->SetSensitiveDetector(vDetector);
         //fCollimatorLogic->SetSensitiveDetector(vDetector);
     }
     
@@ -2474,14 +2501,14 @@ void G4ELIMED_DetectorConstruction::ConstructSDandField(){
         G4VSensitiveDetector* vDetector = new G4ELIMED_SensitiveDetector("/det");
         G4SDManager::GetSDMpointer()->AddNewDetector(vDetector);
         
-        fTransparentDetectorLogic->SetSensitiveDetector(vDetector);
+        //fTransparentDetectorLogic->SetSensitiveDetector(vDetector);
         
         fTransparentDetectorBoxLogic->SetSensitiveDetector(vDetector);
         
-        fTransparentDetectorRack1Logic->SetSensitiveDetector(vDetector);
-        fTransparentDetectorRack2Logic->SetSensitiveDetector(vDetector);
+       // fTransparentDetectorRack1Logic->SetSensitiveDetector(vDetector);
+        //fTransparentDetectorRack2Logic->SetSensitiveDetector(vDetector);
 
-	fTransparentDetectorHexapodLogic->SetSensitiveDetector(vDetector);
+	//fTransparentDetectorHexapodLogic->SetSensitiveDetector(vDetector);
         //fCollimatorLogic->SetSensitiveDetector(vDetector);
     }
     
