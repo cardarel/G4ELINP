@@ -138,9 +138,17 @@ void G4ELIMED_RunAction::EndOfRunAction(const G4Run* run){
   }      
   G4cout
      << "; Nb of 'good' events: " << nbGoodEvents  << G4endl
-     << " Total dose in solid : " << G4BestUnit(sumDose,"Dose") << G4endl  
+     << " Total dose in solid : " << sumDose/gray << " Gray" << G4endl  
      << "------------------------------------------------------------" << G4endl 
      << G4endl;
+     
+     if (IsMaster())
+  {
+        std::ofstream fFileOut;
+        fFileOut.open("SeedsAndDose_summary.dat",std::ofstream::out | std::ofstream::app);
+        fFileOut << G4Random::getTheSeed() << " | " << sumDose/gray << " Gray" << std::endl;
+        fFileOut.close();
+  }
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

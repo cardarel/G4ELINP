@@ -1005,13 +1005,13 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
 				vDisplacement1 = G4RandGauss::shoot(fCollDisplMean, fCollDisplSigma);
 				vDisplacement2 = G4RandGauss::shoot(fCollDisplMean, fCollDisplSigma);
 				}
-				//G4cout << vDisplacement1 << " " << vDisplacement2 << G4endl;
+				G4cout << vDisplacement1 << " " << vDisplacement2 << G4endl;
 
         G4ThreeVector fCollimatorA1PositionVector = G4ThreeVector(+(vRelativeAperture+vDisplacement1),fCollimatorSupportA0B1Distance,0.);
         
         G4ThreeVector fCollimatorA0PositionVector = G4ThreeVector(-(vRelativeAperture+vDisplacement2),fCollimatorSupportA0B1Distance,0.);
         
-
+G4cout << fCollimatorA0PositionVector.x() << " " << fCollimatorA1PositionVector.x() << G4endl;
         fCollimatorA0Physical = new G4PVPlacement(0,
                                                   fCollimatorA0PositionVector,
                                                   fCollimatorLogicL,
@@ -2319,13 +2319,13 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
         fTransparentDetectorRack1Logic->SetVisAttributes(fDetectorVisAttribute);
 		fTransparentDetectorRack2Logic->SetVisAttributes(fDetectorVisAttribute);
         
-        G4ThreeVector fTransparentDetectorRack1PositionVector;
+        //G4ThreeVector fTransparentDetectorRack1PositionVector;
         G4ThreeVector fTransparentDetectorRack2PositionVector;
         
 		
-        fTransparentDetectorRack1PositionVector = G4ThreeVector(fRack1PositionX,fRack1PositionY,fRack1PositionZ);
+        //fTransparentDetectorRack1PositionVector = G4ThreeVector(fRack1PositionX,fRack1PositionY,fRack1PositionZ);
 		fTransparentDetectorRack2PositionVector = G4ThreeVector(fRack2PositionX,fRack2PositionY,fRack2PositionZ);
-		
+		/*
         fTransparentDetectorRack1Physical = new G4PVPlacement(0,
                                                          fTransparentDetectorRack1PositionVector,
                                                          fTransparentDetectorRack1Logic,
@@ -2341,7 +2341,7 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
                                                          fWorldLogic,
                                                          false,
                                                          0); 
-    	
+    	*/
     	//Transparent Detector for Hexapod dose evaluation 
        G4Box* fTransparentDetectorHexapodSolid = new G4Box("TransparentDetectorHexapodSolid",
                                                      5 * CLHEP::cm,
@@ -2356,16 +2356,16 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
 
         G4ThreeVector fTransparentDetectorHexapodPositionVector;
         
-        fTransparentDetectorHexapodPositionVector = G4ThreeVector(fHexapodA1PositionX,fHexapodA1PositionY,fHexapodA1PositionZ);
+        //fTransparentDetectorHexapodPositionVector = G4ThreeVector(fHexapodA1PositionX,fHexapodA1PositionY,fHexapodA1PositionZ);
 		
         fTransparentDetectorHexapodPhysical = new G4PVPlacement(0,
-                                                         fTransparentDetectorHexapodPositionVector,
+                                                         fTransparentDetectorRack2PositionVector, //fTransparentDetectorHexapodPositionVector, //to evalaute dose in rack!
                                                          fTransparentDetectorHexapodLogic,
                                                          "TransparentDetectorHexapodA1",
                                                          fWorldLogic,
                                                          false,
                                                          0);   
-
+/*
         fTransparentDetectorHexapodPositionVector = G4ThreeVector(fHexapodA2PositionX,fHexapodA2PositionY,fHexapodA2PositionZ);
 		
         fTransparentDetectorHexapodPhysical = new G4PVPlacement(0,
@@ -2394,7 +2394,8 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
                                                          "TransparentDetectorHexapodB2",
                                                          fWorldLogic,
                                                          false,
-                                                         3);                                                                         
+                                                         3);   
+*/                                                                      
     }
 
     // Pb disks
