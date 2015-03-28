@@ -103,8 +103,8 @@ G4ELIMED_DetectorConstruction::G4ELIMED_DetectorConstruction():fWorldLogic(0){
     fCollimatorAperture = 0.59 * CLHEP::mm;
 
 	bCollimatorRelativeRandomDisplacement = 0;
-	fCollDisplMean = 0.5 *  CLHEP::mm;
-	fCollDisplSigma = 0.001 *  CLHEP::mm;
+	SetCollRandDisplMean(0. *  CLHEP::mm);
+	SetCollRandDisplSigma(0.001 *  CLHEP::mm);
 
     fRomanPotSupportAngle = G4ThreeVector(0.,0.,0.);
     fRomanPotSupportPosition = G4ThreeVector(0.,0.,0.);
@@ -992,26 +992,30 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
         G4double vRelativeAperture = (fCollimatorAperture+fCollimatorWidth)*0.5;
         
 // 2014/11/18 ebagli - Added relative random misplacement of the collimators
-			G4double vDisplacement1 = 0.;
-			G4double vDisplacement2 = 0.;
+			G4double vDisplacement1 = fCollDisplMean[i1];
+			G4double vDisplacement2 = fCollDisplMean[i1];
 			if(bCollimatorRelativeRandomDisplacement==1)
 				{ // UNIFORM DISTRIBUTION
-				vDisplacement1 = fCollDisplMean + 2.*(G4UniformRand()-0.5)*fCollDisplSigma;
-				vDisplacement2 = fCollDisplMean + 2.*(G4UniformRand()-0.5)*fCollDisplSigma;
+					vDisplacement1 = fCollDisplMean[i1] + 2.*(G4UniformRand()-0.5)*fCollDisplSigma[i1];
+					vDisplacement2 = fCollDisplMean[i1] + 2.*(G4UniformRand()-0.5)*fCollDisplSigma[i1];
 				}
 		
 			if(bCollimatorRelativeRandomDisplacement==2)
 				{ // GAUSSIAN DISTRIBUTION
-				vDisplacement1 = G4RandGauss::shoot(fCollDisplMean, fCollDisplSigma);
-				vDisplacement2 = G4RandGauss::shoot(fCollDisplMean, fCollDisplSigma);
+					vDisplacement1 = G4RandGauss::shoot(fCollDisplMean[i1], fCollDisplSigma[i1]);
+					vDisplacement2 = G4RandGauss::shoot(fCollDisplMean[i1], fCollDisplSigma[i1]);
 				}
-				G4cout << vDisplacement1 << " " << vDisplacement2 << G4endl;
+
+            G4cout << "Collimator " << i1 << G4endl;
+            G4cout << "Displacements [mm] = (L) " << vDisplacement1/CLHEP::mm << " (R) " << vDisplacement2/CLHEP::mm << G4endl;
 
         G4ThreeVector fCollimatorA1PositionVector = G4ThreeVector(+(vRelativeAperture+vDisplacement1),fCollimatorSupportA0B1Distance,0.);
         
         G4ThreeVector fCollimatorA0PositionVector = G4ThreeVector(-(vRelativeAperture+vDisplacement2),fCollimatorSupportA0B1Distance,0.);
         
-G4cout << fCollimatorA0PositionVector.x() << " " << fCollimatorA1PositionVector.x() << G4endl;
+            G4cout << "Center Positions [mm] = (L) " << fCollimatorA0PositionVector.x()/CLHEP::mm << " (R) " << fCollimatorA1PositionVector.x()/CLHEP::mm  << G4endl;
+
+
         fCollimatorA0Physical = new G4PVPlacement(0,
                                                   fCollimatorA0PositionVector,
                                                   fCollimatorLogicL,
@@ -2326,7 +2330,8 @@ G4cout << fCollimatorA0PositionVector.x() << " " << fCollimatorA1PositionVector.
         //fTransparentDetectorRack1PositionVector = G4ThreeVector(fRack1PositionX,fRack1PositionY,fRack1PositionZ);
 		fTransparentDetectorRack2PositionVector = G4ThreeVector(fRack2PositionX,fRack2PositionY,fRack2PositionZ);
 		/*
-        fTransparentDetectorRack1Physical = new G4PVPlacement(0,
+        //fTransparentDetectorRack1Physical = 
+         new G4PVPlacement(0,
                                                          fTransparentDetectorRack1PositionVector,
                                                          fTransparentDetectorRack1Logic,
                                                          "TransparentDetectorRack1",
@@ -2334,7 +2339,8 @@ G4cout << fCollimatorA0PositionVector.x() << " " << fCollimatorA1PositionVector.
                                                          false,
                                                          0);   
                      
-       fTransparentDetectorRack2Physical = new G4PVPlacement(0,
+       //fTransparentDetectorRack2Physical =
+         new G4PVPlacement(0,
                                                          fTransparentDetectorRack2PositionVector,
                                                          fTransparentDetectorRack2Logic,
                                                          "TransparentDetectorRack2",

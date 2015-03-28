@@ -62,15 +62,15 @@ G4ELIMED_DetectorConstructionMessenger::G4ELIMED_DetectorConstructionMessenger(G
     fCollimatorApertureCmd->SetGuidance("Set collimator aperture.");
     fCollimatorApertureCmd->SetParameterName("aperture",false);
     fCollimatorApertureCmd->SetUnitCategory("Length");
-    fCollimatorApertureCmd->SetRange("aperture>0.0");
+    fCollimatorApertureCmd->SetRange("aperture>=0.0");
     fCollimatorApertureCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
-
+    
     fRomanPotSupportAngleCmd = new G4UIcmdWith3VectorAndUnit("/collimator/setAngle",this);
     fRomanPotSupportAngleCmd->SetGuidance("Set collimator angle.");
     fRomanPotSupportAngleCmd->SetParameterName("angX","angY","angZ",false);
     fRomanPotSupportAngleCmd->SetUnitCategory("Angle");
     fRomanPotSupportAngleCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
-
+    
     fRomanPotSupportPositionCmd = new G4UIcmdWith3VectorAndUnit("/collimator/setPosition",this);
     fRomanPotSupportPositionCmd->SetGuidance("Set collimator position.");
     fRomanPotSupportPositionCmd->SetParameterName("posX","posY","posZ",false);
@@ -82,34 +82,48 @@ G4ELIMED_DetectorConstructionMessenger::G4ELIMED_DetectorConstructionMessenger(G
     fCollimatorSetupCmd->SetParameterName("line",false);
     fCollimatorSetupCmd->SetRange("line>=0 && line<=1");
     fCollimatorSetupCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
-
+    
     fPbDisksCmd = new G4UIcmdWithAnInteger("/collimator/PbDisks",this);
     fPbDisksCmd->SetGuidance("Set disk 1 (1), disk 2 (2), no disk (0), both disks (3).");
     fPbDisksCmd->SetParameterName("disk",false);
     fPbDisksCmd->SetRange("disk>=0");
     fPbDisksCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
-
-
+    
+    
     fCollimatorRandDisplCmd = new G4UIcmdWithAnInteger("/collimator/setRandDispl",this);
     fCollimatorRandDisplCmd->SetGuidance("Set random aperture collimator: (0) no random, (1) uniform, (2) gauss.");
     fCollimatorRandDisplCmd->SetParameterName("randdispl",false);
     fCollimatorRandDisplCmd->SetRange("randdispl>=0");
     fCollimatorRandDisplCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
-
+    
     fCollimatorRandDisplMeanCmd = new G4UIcmdWithADoubleAndUnit("/collimator/setRandDisplMean",this);
     fCollimatorRandDisplMeanCmd->SetGuidance("Set random aperture collimator mean.");
     fCollimatorRandDisplMeanCmd->SetParameterName("randmean",false);
     fCollimatorRandDisplMeanCmd->SetUnitCategory("Length");
     fCollimatorRandDisplMeanCmd->SetRange("randmean>=0.0");
     fCollimatorRandDisplMeanCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
-
+    
     fCollimatorRandDisplSigmaCmd = new G4UIcmdWithADoubleAndUnit("/collimator/setRandDisplSigma",this);
     fCollimatorRandDisplSigmaCmd->SetGuidance("Set random aperture collimator sigma.");
     fCollimatorRandDisplSigmaCmd->SetParameterName("randsigma",false);
     fCollimatorRandDisplSigmaCmd->SetUnitCategory("Length");
     fCollimatorRandDisplSigmaCmd->SetRange("randsigma>=0.0");
     fCollimatorRandDisplSigmaCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
-
+    
+    
+    for(G4int index=0;index<64;index++){
+        char tempchar[64];
+        sprintf(tempchar,"/collimator/setSingleDisplMean%02d",index);
+        fCollimatorSingleDisplMeanCmd[index] = new G4UIcmdWithADoubleAndUnit(tempchar,this);
+        fCollimatorSingleDisplMeanCmd[index]->SetGuidance("Set single aperture collimator mean.");
+        sprintf(tempchar,"singlemean%02d",index);
+        fCollimatorSingleDisplMeanCmd[index]->SetParameterName(tempchar,false);
+        fCollimatorSingleDisplMeanCmd[index]->SetUnitCategory("Length");
+        sprintf(tempchar,"singlemean%02d>=0.0",index);
+        fCollimatorSingleDisplMeanCmd[index]->SetRange(tempchar);
+        fCollimatorSingleDisplMeanCmd[index]->AvailableForStates(G4State_PreInit,G4State_Idle);
+    }
+    
     fModulesOnCmd = new G4UIcmdWithAnInteger("/line/modules",this);
     fModulesOnCmd->SetGuidance("Set modules On (1), Off (0)");
     fModulesOnCmd->SetParameterName("modules",false);
@@ -132,6 +146,9 @@ G4ELIMED_DetectorConstructionMessenger::~G4ELIMED_DetectorConstructionMessenger(
     delete fCollimatorRandDisplCmd;
     delete fCollimatorRandDisplMeanCmd;
     delete fCollimatorRandDisplSigmaCmd;
+    for(G4int index=0;index<64;index++){
+        delete fCollimatorSingleDisplMeanCmd[index];
+    }
     delete fModulesOnCmd;
 }
 
@@ -147,10 +164,10 @@ void G4ELIMED_DetectorConstructionMessenger::SetNewValue(G4UIcommand * command,G
     
     if( command == fCollimatorApertureCmd )
     { fDetectorTarget->SetCollimatorAperture(fCollimatorApertureCmd->GetNewDoubleValue(newValue));}
-
+    
     if( command == fRomanPotSupportAngleCmd )
     { fDetectorTarget->SetRomanPotSupportAngle(fRomanPotSupportAngleCmd->GetNew3VectorValue(newValue));}
-
+    
     if( command == fRomanPotSupportPositionCmd )
     { fDetectorTarget->SetRomanPotSupportPosition(fRomanPotSupportPositionCmd->GetNew3VectorValue(newValue));}
     
@@ -159,18 +176,22 @@ void G4ELIMED_DetectorConstructionMessenger::SetNewValue(G4UIcommand * command,G
     
     if( command == fPbDisksCmd )
     { fDetectorTarget->SetPbDisks(fPbDisksCmd->GetNewIntValue(newValue));}
-
+    
     if( command == fCollimatorRandDisplCmd )
     { fDetectorTarget->SetCollRandDispl(fCollimatorRandDisplCmd->GetNewIntValue(newValue));}
- 
+    
     if( command == fCollimatorRandDisplMeanCmd )
     { fDetectorTarget->SetCollRandDisplMean(fCollimatorRandDisplMeanCmd->GetNewDoubleValue(newValue));}
-
+    
     if( command == fCollimatorRandDisplSigmaCmd )
     { fDetectorTarget->SetCollRandDisplSigma(fCollimatorRandDisplSigmaCmd->GetNewDoubleValue(newValue));}
-   
+    
+    for(G4int index=0;index<64;index++){
+    if( command == fCollimatorSingleDisplMeanCmd[index] )
+    { fDetectorTarget->SetCollSingleDisplMean(index,fCollimatorSingleDisplMeanCmd[index]->GetNewDoubleValue(newValue));}
+    }
     if( command == fModulesOnCmd )
-    { fDetectorTarget->SetModules(fModulesOnCmd->GetNewIntValue(newValue));}   
+    { fDetectorTarget->SetModules(fModulesOnCmd->GetNewIntValue(newValue));}
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
@@ -195,16 +216,17 @@ G4String G4ELIMED_DetectorConstructionMessenger::GetCurrentValue(G4UIcommand * c
     if(command==fRomanPotSupportPositionCmd ){
         cv = fRomanPotSupportPositionCmd->ConvertToString(fDetectorTarget->GetRomanPotSupportPosition(),"mm");
     }
-
+    
     if(command==fCollimatorRandDisplCmd ){
         cv = fCollimatorRandDisplCmd->ConvertToString(fDetectorTarget->GetCollRandDispl());
     }
-    if(command==fCollimatorRandDisplMeanCmd ){
-        cv = fCollimatorRandDisplMeanCmd->ConvertToString(fDetectorTarget->GetCollRandDisplMean(),"mm");
+    
+    for(G4int index=0;index<64;index++){
+        if( command == fCollimatorSingleDisplMeanCmd[index] ){
+            cv = fCollimatorSingleDisplMeanCmd[index]->ConvertToString(fDetectorTarget->GetCollSingleDisplMean(index));
+        }
     }
-    if(command==fCollimatorRandDisplSigmaCmd ){
-        cv = fCollimatorRandDisplSigmaCmd->ConvertToString(fDetectorTarget->GetCollRandDisplSigma(),"mm");
-    }
+
     return cv;
 }
 

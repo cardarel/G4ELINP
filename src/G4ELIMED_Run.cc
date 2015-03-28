@@ -43,7 +43,6 @@
 G4ELIMED_Run::G4ELIMED_Run()
  : G4Run(), 
    fCollID_dose(-1),
-   fPrintModulo(10000),
    fGoodEvents(0),
    fSumDose(0.)
 { }

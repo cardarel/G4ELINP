@@ -140,7 +140,7 @@ private:
     G4LogicalVolume* fConcreteTopLogic;
     G4LogicalVolume* fConcreteRightWallLogic;
     G4LogicalVolume* fConcreteLeftWallLogic;
-    G4LogicalVolume* fConcreteA2Logic;
+    //G4LogicalVolume* fConcreteA2Logic;
        
     G4VPhysicalVolume* fConcreteA0Physical;
     G4VPhysicalVolume* fConcreteFloorPhysical;
@@ -189,8 +189,8 @@ private:
     G4double fCollimatorAperture;
 
 	G4int bCollimatorRelativeRandomDisplacement;
-	G4double fCollDisplMean;
-	G4double fCollDisplSigma;
+	G4double fCollDisplMean[64];
+	G4double fCollDisplSigma[64];
 
 public:
     void SetCollimatorNumber(G4int vNumber) {fCollimatorNumber=vNumber;};
@@ -205,12 +205,20 @@ public:
     void SetCollRandDispl(G4int vNumber) {bCollimatorRelativeRandomDisplacement=vNumber;};
     G4int GetCollRandDispl() {return bCollimatorRelativeRandomDisplacement;};
 
-    void SetCollRandDisplMean(G4double vDistance) {fCollDisplMean=vDistance;};
-    G4double GetCollRandDisplMean() {return fCollDisplMean;};
+    void SetCollRandDisplMean(G4int index,G4double vDistance) {fCollDisplMean[index]=vDistance;};
+    G4double GetCollRandDisplMean(G4int index) {return fCollDisplMean[index];};
 
-    void SetCollRandDisplSigma(G4double vAperture) {fCollDisplSigma=vAperture;};
-    G4double GetCollRandDisplSigma() {return fCollDisplSigma;};
+    void SetCollRandDisplSigma(G4int index,G4double vAperture) {fCollDisplSigma[index]=vAperture;};
+    G4double GetCollRandDisplSigma(G4int index) {return fCollDisplSigma[index];};
 
+    void SetCollRandDisplMean(G4double vDistance) {for(int index=0;index<64;index++){fCollDisplMean[index]=vDistance;}};
+    void SetCollRandDisplSigma(G4double vAperture) {for(int index=0;index<64;index++){fCollDisplSigma[index]=vAperture;}};
+
+    void SetCollSingleDisplMean(G4int index,G4double vDistance) {fCollDisplMean[index]=vDistance;};
+    G4double GetCollSingleDisplMean(G4int index) {return fCollDisplMean[index];};
+
+    
+    
 private:
     G4bool bCollimator;
     G4Material *fCollimatorMaterial;
@@ -432,8 +440,8 @@ private:
 	G4double fTransparentRackLength;
 	G4double fTransparentRackHeight;
 	
-        G4VPhysicalVolume* fTransparentDetectorRack1Physical;
-		G4VPhysicalVolume* fTransparentDetectorRack2Physical;
+        //G4VPhysicalVolume* fTransparentDetectorRack1Physical;
+		//G4VPhysicalVolume* fTransparentDetectorRack2Physical;
 
 	G4double fRack1PositionX;
     G4double fRack1PositionY;

@@ -54,7 +54,6 @@ class G4ELIMED_Run : public G4Run
     
   private:
     G4int fCollID_dose;   
-    G4int fPrintModulo;
     G4int fGoodEvents;
     G4double fSumDose;         
 };
