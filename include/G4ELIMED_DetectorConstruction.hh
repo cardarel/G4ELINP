@@ -338,6 +338,7 @@ private:
         G4LogicalVolume* fM34Logic;       
          
         G4LogicalVolume* fCSPECLogic;
+        G4LogicalVolume* fTransparentCSPECLogic;
         G4LogicalVolume* fCSPECWindowLogic;   
         
         G4LogicalVolume* fM27AMagnetLogic;    
@@ -361,6 +362,7 @@ private:
         G4VPhysicalVolume* fM34RGirderPhysical;   
                             
         G4VPhysicalVolume* fCSPECPhysical;
+        G4VPhysicalVolume* fTransparentCSPECPhysical;
         G4VPhysicalVolume* fCSPECWindow0Physical;
         G4VPhysicalVolume* fCSPECWindow1Physical;
         G4VPhysicalVolume* fPbDiskM30Physical;
