@@ -98,7 +98,7 @@ G4ELIMED_DetectorConstruction::G4ELIMED_DetectorConstruction():fWorldLogic(0){
 	ResetDetectorForSetup(bLine);
 
     // Collimator
-    fCollimatorNumber = 12;   
+    fCollimatorNumber = 14;   
     fCollimatorDistance = 0. * CLHEP::mm;
     fCollimatorAperture = 0.59 * CLHEP::mm;
 
