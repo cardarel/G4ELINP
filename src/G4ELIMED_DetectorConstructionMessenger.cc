@@ -119,11 +119,25 @@ G4ELIMED_DetectorConstructionMessenger::G4ELIMED_DetectorConstructionMessenger(G
         sprintf(tempchar,"singlemean%02d",index);
         fCollimatorSingleDisplMeanCmd[index]->SetParameterName(tempchar,false);
         fCollimatorSingleDisplMeanCmd[index]->SetUnitCategory("Length");
-        sprintf(tempchar,"singlemean%02d>=0.0",index);
-        fCollimatorSingleDisplMeanCmd[index]->SetRange(tempchar);
         fCollimatorSingleDisplMeanCmd[index]->AvailableForStates(G4State_PreInit,G4State_Idle);
     }
-    
+
+    for(G4int index=0;index<64;index++){
+        char tempchar[64];
+        sprintf(tempchar,"/collimator/setSingleAngle%02d",index);
+        fCollimatorSingleAngleCmd[index] = new G4UIcmdWithADoubleAndUnit(tempchar,this);
+        fCollimatorSingleAngleCmd[index]->SetGuidance("Set single collimator angle.");
+        sprintf(tempchar,"singleangle%02d",index);
+        fCollimatorSingleAngleCmd[index]->SetParameterName(tempchar,false);
+        fCollimatorSingleAngleCmd[index]->SetUnitCategory("Angle");
+        fCollimatorSingleAngleCmd[index]->AvailableForStates(G4State_PreInit,G4State_Idle);
+    }
+
+    fCollimatorAngleCmd = new G4UIcmdWithAnInteger("/collimator/setManualAngle",this);
+    fCollimatorAngleCmd->SetGuidance("Set manual angle on or off");
+    fCollimatorAngleCmd->SetParameterName("manualangle",false);
+    fCollimatorAngleCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
+
     fModulesOnCmd = new G4UIcmdWithAnInteger("/line/modules",this);
     fModulesOnCmd->SetGuidance("Set modules On (1), Off (0)");
     fModulesOnCmd->SetParameterName("modules",false);
@@ -146,8 +160,13 @@ G4ELIMED_DetectorConstructionMessenger::~G4ELIMED_DetectorConstructionMessenger(
     delete fCollimatorRandDisplCmd;
     delete fCollimatorRandDisplMeanCmd;
     delete fCollimatorRandDisplSigmaCmd;
+    delete fCollimatorAngleCmd;
+
     for(G4int index=0;index<64;index++){
         delete fCollimatorSingleDisplMeanCmd[index];
+    }
+    for(G4int index=0;index<64;index++){
+        delete fCollimatorSingleAngleCmd[index];
     }
     delete fModulesOnCmd;
 }
@@ -174,6 +193,7 @@ void G4ELIMED_DetectorConstructionMessenger::SetNewValue(G4UIcommand * command,G
     if( command == fCollimatorSetupCmd )
     { fDetectorTarget->ResetDetectorForSetup(fCollimatorSetupCmd->GetNewIntValue(newValue));}
     
+
     if( command == fPbDisksCmd )
     { fDetectorTarget->SetPbDisks(fPbDisksCmd->GetNewIntValue(newValue));}
     
@@ -189,6 +209,13 @@ void G4ELIMED_DetectorConstructionMessenger::SetNewValue(G4UIcommand * command,G
     for(G4int index=0;index<64;index++){
     if( command == fCollimatorSingleDisplMeanCmd[index] )
     { fDetectorTarget->SetCollSingleDisplMean(index,fCollimatorSingleDisplMeanCmd[index]->GetNewDoubleValue(newValue));}
+    }
+    if( command == fCollimatorAngleCmd )
+    { fDetectorTarget->SetCollAngleManual(fCollimatorAngleCmd->GetNewIntValue(newValue));}
+
+    for(G4int index=0;index<64;index++){
+    if( command == fCollimatorSingleAngleCmd[index] )
+    { fDetectorTarget->SetCollSingleAngle(index,fCollimatorSingleAngleCmd[index]->GetNewDoubleValue(newValue));}
     }
     if( command == fModulesOnCmd )
     { fDetectorTarget->SetModules(fModulesOnCmd->GetNewIntValue(newValue));}
@@ -221,9 +248,18 @@ G4String G4ELIMED_DetectorConstructionMessenger::GetCurrentValue(G4UIcommand * c
         cv = fCollimatorRandDisplCmd->ConvertToString(fDetectorTarget->GetCollRandDispl());
     }
     
+    if(command==fCollimatorAngleCmd ){
+        cv = fCollimatorAngleCmd->ConvertToString(fDetectorTarget->GetCollAngleManual());
+    }
     for(G4int index=0;index<64;index++){
         if( command == fCollimatorSingleDisplMeanCmd[index] ){
             cv = fCollimatorSingleDisplMeanCmd[index]->ConvertToString(fDetectorTarget->GetCollSingleDisplMean(index));
+        }
+    }
+
+    for(G4int index=0;index<64;index++){
+        if( command == fCollimatorSingleAngleCmd[index] ){
+            cv = fCollimatorSingleAngleCmd[index]->ConvertToString(fDetectorTarget->GetCollSingleAngle(index));
         }
     }
 

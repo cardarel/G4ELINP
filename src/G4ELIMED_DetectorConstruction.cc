@@ -102,7 +102,8 @@ G4ELIMED_DetectorConstruction::G4ELIMED_DetectorConstruction():fWorldLogic(0){
     fCollimatorDistance = 0. * CLHEP::mm;
     fCollimatorAperture = 0.59 * CLHEP::mm;
 
-	bCollimatorRelativeRandomDisplacement = 0;
+	bCollimatorRelativeRandomDisplacement = false;
+	bCollimatorAngleManual = false;
 	SetCollRandDisplMean(0. *  CLHEP::mm);
 	SetCollRandDisplSigma(0.001 *  CLHEP::mm);
 
@@ -288,7 +289,7 @@ void G4ELIMED_DetectorConstruction::ResetDetectorForSetup(int line){
    	   fTransparentDetectorWidth = 554. * CLHEP::cm; //edit to fit the smaller LE room (278cm on the right)
   	   fTransparentDetectorHeight = 500.  * CLHEP::cm; //edit to fit the room height
  	   fTransparentDetectorLength = 1. * CLHEP::cm;
-		
+
 		}
 		else
 		{ ///L.E. line TO BE DEFINED !!
@@ -1036,7 +1037,7 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
 
 
         G4double vIndex = double(i1);
-        
+
         if(fmod(fCollimatorNumber,2)==0.) {
             vIndex += 0.5;
         }
@@ -1044,7 +1045,14 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
         vIndex -= int(fCollimatorNumber/2.);
         
         G4double vAngle = double(i1)/double(fCollimatorNumber);
-                
+
+        if(bCollimatorAngleManual == true){
+        	vAngle = fCollDisplAngle[i1];
+        }
+        else{
+        	vAngle = double(i1)/double(fCollimatorNumber);
+        }
+
         G4double vRelativeDistance = vIndex*(fCollimatorDistance+fCollimatorLength+fCollimatorSupportA1B0Length*2.);
         
         G4ThreeVector fCollimatorSupportA0PositionVector = G4ThreeVector(0.,0.,vRelativeDistance);

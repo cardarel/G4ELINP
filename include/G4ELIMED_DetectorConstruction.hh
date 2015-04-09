@@ -189,6 +189,8 @@ private:
     G4double fCollimatorAperture;
 
 	G4int bCollimatorRelativeRandomDisplacement;
+	G4int bCollimatorAngleManual;
+	G4double fCollDisplAngle[64];
 	G4double fCollDisplMean[64];
 	G4double fCollDisplSigma[64];
 
@@ -217,6 +219,11 @@ public:
     void SetCollSingleDisplMean(G4int index,G4double vDistance) {fCollDisplMean[index]=vDistance;};
     G4double GetCollSingleDisplMean(G4int index) {return fCollDisplMean[index];};
 
+    void SetCollAngleManual(G4int vNumber) {bCollimatorAngleManual=vNumber;};
+    G4int GetCollAngleManual() {return bCollimatorAngleManual;};
+
+    void SetCollSingleAngle(G4int index,G4double vDistance) {fCollDisplAngle[index]=vDistance;};
+    G4double GetCollSingleAngle(G4int index) {return fCollDisplAngle[index];};
     
     
 private:

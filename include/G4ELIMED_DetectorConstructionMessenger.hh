@@ -67,8 +67,10 @@ class G4ELIMED_DetectorConstructionMessenger: public G4UImessenger
     G4UIcmdWithADoubleAndUnit* fCollimatorRandDisplSigmaCmd;
 
     G4UIcmdWithADoubleAndUnit* fCollimatorSingleDisplMeanCmd[64];
+    G4UIcmdWithADoubleAndUnit* fCollimatorSingleAngleCmd[64];
 
     G4UIcmdWithAnInteger* fCollimatorSetupCmd;
+    G4UIcmdWithAnInteger* fCollimatorAngleCmd;
     
     G4UIcmdWithAnInteger* fPbDisksCmd;
       
