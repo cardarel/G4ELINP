@@ -272,11 +272,17 @@ private:
     G4double fGirderThickness;
     G4double fGirderJointLength;
     G4double fPedestalHeight;
+    G4double fPedestalM30Height;
+    G4double fPedestalM31Height;
     G4double fPedestalWidth;
     G4double fPedestalLength;
     G4double fPedestalThickness;
     G4double fGirderY;
+    G4double fGirderM30Y;    
+    G4double fGirderM31Y;        
     G4double fPedestalY;
+    G4double fPedestalM30Y;
+    G4double fPedestalM31Y;
     G4double fM27AGirderLength;
     G4double fM30GirderLength;
     G4double fM31GirderLength;
@@ -333,7 +339,11 @@ private:
    
     	G4LogicalVolume* fGirderJointLogic;
    		G4LogicalVolume* fPedestalLogic;
+   		G4LogicalVolume* fPedestalM30Logic;
+   		G4LogicalVolume* fPedestalM31Logic;
    		G4LogicalVolume* fPedestalInsideLogic;
+   		G4LogicalVolume* fPedestalM30InsideLogic;
+   		G4LogicalVolume* fPedestalM31InsideLogic;
     	G4LogicalVolume* fM30GirderLogic;
         G4LogicalVolume* fM31GirderLogic;
         G4LogicalVolume* fM27AGirderLogic;
