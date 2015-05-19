@@ -1365,7 +1365,7 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
         											(fM31Distance -0.5 * fM31GirderLength - (fConcreteA1Distance + 0.5 *fConcreteA1Length)) * 0.5 +fConcreteA1Distance + 0.5 *fConcreteA1Length);
     
     if (bModulesOn==true)
-	{/*
+	{
         fCSPECPhysical = new G4PVPlacement(0,
                                               fCSPECPositionVector,
                                               fCSPECLogic,
@@ -1373,7 +1373,7 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
                                               fWorldLogic,
                                               false,
                                               0);
-        */                                      
+         /*                                   													//for CSPEC scoting only!!
          fTransparentCSPECPhysical = new G4PVPlacement(0,
                                               fTransparentCSPECPositionVector,
                                               fTransparentCSPECLogic,
@@ -1381,6 +1381,7 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
                                               fWorldLogic,
                                               false,
                                               0);
+         */
                                               
      }    
         G4Tubs* fCSPECtWindowSolid = new G4Tubs("fCSPECWindow",
@@ -1400,7 +1401,7 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
         G4ThreeVector fCSPECWindow1PositionVector = G4ThreeVector(0.,0.,fM30Distance + fCSPECLength * 0.5 + fCSPECWindowLength * 0.5);
         
     if (bModulesOn==true)
-    {/*
+    {
         fCSPECWindow0Physical = new G4PVPlacement(0,
                                                      fCSPECWindow0PositionVector,
                                                      fCSPECWindowLogic,
@@ -1416,7 +1417,7 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
                                                      fWorldLogic,
                                                      false,
                                                      0);
-     */
+     
      }
      //M31
 	G4Box* fM31GirderA0Solid = new G4Box("M31GirderA0",
@@ -2364,7 +2365,7 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
         													fRoomShiftY,	
         													fBeamPipeA0Length + (fRomanPotLength + 2.*fRomanPotWindowLength) + fBeamPipeA2Length + fTransparentDetectorLength * 0.5);
         
-/*
+
         fTransparentDetectorBoxPhysical = new G4PVPlacement(0,
                                                             fTransparentDetectorBoxPositionVector,
                                                             fTransparentDetectorBoxLogic,
@@ -2388,7 +2389,7 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
                                                             fWorldLogic,
                                                             false,
                                                             2);
-*/
+
         //fTransparentDetectorLogic->SetVisAttributes(G4VisAttributes::GetInvisible()); // EDIT PAOLO detector set visible
         //fTransparentDetectorBoxLogic->SetVisAttributes(G4VisAttributes::GetInvisible());
     
@@ -2573,8 +2574,8 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
         
         //fTransparentDetectorLogic->SetSensitiveDetector(vDetector);
 
-        //fTransparentDetectorBoxLogic->SetSensitiveDetector(vDetector);
-        fTransparentCSPECLogic->SetSensitiveDetector(vDetector);
+        fTransparentDetectorBoxLogic->SetSensitiveDetector(vDetector);
+        //fTransparentCSPECLogic->SetSensitiveDetector(vDetector); //CSPEC scoring only!!
        
         //fTransparentDetectorRack1Logic->SetSensitiveDetector(vDetector);
         //fTransparentDetectorRack2Logic->SetSensitiveDetector(vDetector);
@@ -2605,8 +2606,8 @@ void G4ELIMED_DetectorConstruction::ConstructSDandField(){
         
         //fTransparentDetectorLogic->SetSensitiveDetector(vDetector);
         
-        //fTransparentDetectorBoxLogic->SetSensitiveDetector(vDetector);
-        fTransparentCSPECLogic->SetSensitiveDetector(vDetector);
+        fTransparentDetectorBoxLogic->SetSensitiveDetector(vDetector);
+        //fTransparentCSPECLogic->SetSensitiveDetector(vDetector); //CSPEC scoring only!!
                 
        // fTransparentDetectorRack1Logic->SetSensitiveDetector(vDetector);
         //fTransparentDetectorRack2Logic->SetSensitiveDetector(vDetector);
