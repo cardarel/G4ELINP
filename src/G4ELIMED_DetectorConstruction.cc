@@ -961,7 +961,7 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
 
     
     G4double fRomanPotCollimatorEnvelopeWidth = 0.5 * sqrt(fCollimatorSupportA0B0Width * fCollimatorSupportA0B0Width + fCollimatorSupportA0B0Height * fCollimatorSupportA0B0Height);
-    G4double fRomanPotCollimatorEnvelopeLength = (fCollimatorLength + fCollimatorSupportA1B0Length * 2.) * 0.5 * fCollimatorNumber;
+    G4double fRomanPotCollimatorEnvelopeLength = (fCollimatorLength + fCollimatorSupportA1B0Length * 2.) * 0.5 * fCollimatorNumber + fCollimatorDistance;
     
     G4Box* fRomanPotCollimatorEnvelopeSolid = new G4Box("fRomanPotCollimatorEnvelopeSolid",
                                                         fRomanPotCollimatorEnvelopeWidth,
@@ -1058,8 +1058,13 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
         	vAngle = double(i1)/double(fCollimatorNumber);
         }
 
-        G4double vRelativeDistance = vIndex*(fCollimatorDistance+fCollimatorLength+fCollimatorSupportA1B0Length*2.);
-        
+
+        G4double vRelativeDistance = vIndex*(fCollimatorLength+fCollimatorSupportA1B0Length*2.);
+
+        if(i1>11){
+        	vRelativeDistance += fCollimatorDistance;
+        }
+
         G4ThreeVector fCollimatorSupportA0PositionVector = G4ThreeVector(0.,0.,vRelativeDistance);
         
         G4RotationMatrix* fCollimatorRotationMatrix = new G4RotationMatrix(2.*M_PI*vAngle,0.,0.);
