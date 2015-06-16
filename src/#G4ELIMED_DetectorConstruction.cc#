@@ -91,7 +91,6 @@ G4ELIMED_DetectorConstruction::G4ELIMED_DetectorConstruction():fWorldLogic(0){
     bCollimator = true;
     bTransparentDetector = true;
     bModulesOn = true;
-    bA1ConcreteDetail = true;
     
     // Pb disks
     PbDisks = 0;
@@ -188,7 +187,7 @@ void G4ELIMED_DetectorConstruction::ResetDetectorForSetup(int line){
 	fTopThickness = 150. * CLHEP::cm; //ceiling thickness
 	fWallThickness = 150. * CLHEP::cm;
 	fWallThickness2 = 150. * CLHEP::cm; // only for HE line, left wall has different thickness
-	fWallHeigth =  700.* CLHEP::cm; // height of side walls
+	fWallHeigth =  700.* clhep::cm; // height of side walls
 	
 	fConcreteA0RadiusPipe = 2.16 * CLHEP::cm;
 	fConcreteA0Distance = 611. * CLHEP::cm + fWallThickness* 0.5;
@@ -200,9 +199,6 @@ void G4ELIMED_DetectorConstruction::ResetDetectorForSetup(int line){
 	fConcreteA1Height = 250. * CLHEP::cm;
 	fConcreteA1RadiusPipe = 2.16 * CLHEP::cm;
 	fConcreteA1Distance = fBeamPipeA2Length + fRomanPotLength + fBeamPipeA0Length + 2*fRomanPotWindowLength - fConcreteA1Length * 0.5;
-	fA1LeadPipeCapWidth = 140. * CLHEP::mm;
-	fA1LeadPipeCapHeight = 140. * CLHEP::mm;
-	fA1LeadPipeCapLength = 250. * CLHEP::mm;
     
     // Collimator
     fCollimatorLength = 20. * CLHEP::mm;
@@ -660,9 +656,6 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
        G4VisAttributes* fConcreteVisAttribute;
         fConcreteVisAttribute = new G4VisAttributes(G4Colour(0.0,1.0,0.0));
         fConcreteVisAttribute->SetForceSolid(false);
-       
-       G4VisAttributes* fPbCapVisAttribute = new G4VisAttributes(G4Colour(0.2,0.2,0.2));
-      fPbCapVisAttribute->SetForceSolid(false);
     
         
 	//-------------------------------------------A0 WALL with hole for pipe ---------------------------------------//
@@ -706,97 +699,15 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
 
 	//-------------------------------------------A1 Concrete SHIELDING BLOCK with hole for pipe ------------------------------------------------//
 
-   		if(bA1ConcreteDetail==true) //RELASTIC CONCRETE HOLE+Pb RING
-		{
+
 	//A1B0 concrete block for shield -no hole
 
         G4Box* fConcreteA1B0Solid = new G4Box("ConcreteA1B0",
                                               fConcreteA1Width * 0.5,
                                               fConcreteA1Height * 0.5,
-                                              fConcreteA1Length * 0.5); //??EDIT TO CHECK CONCRETE THICKNESS SHIELDING 
+                                              fConcreteA1Length * 0.1); //??EDIT TO CHECK CONCRETE THICKNESS SHIELDING 
 
-	//A1B1 tube for pipe  hole
-        G4Tubs* fConcreteA1B1Solid = new G4Tubs("ConcreteA1B1",
-                                                0.,
-                                                fConcreteA1RadiusPipe * 2.0,
-                                                fConcreteA1Length * 0.6,
-                                                0*CLHEP::deg,
-                                                360*CLHEP::deg);	
-                                                
-   
-   //A1B2 Hole for Pb pipe cap
-        G4Box* fConcreteA1B2Solid = new G4Box("ConcreteA1B2",
-                                              (fA1LeadPipeCapWidth + 25.*CLHEP::mm) * 0.5,
-                                              (fA1LeadPipeCapHeight + 25.*CLHEP::mm) * 0.5,
-                                              (fA1LeadPipeCapLength + 10.*CLHEP::mm) * 0.5 + + 10.*CLHEP::mm); // 10 cm added to avoid error in subtraction, willdisappear in subtraction shitf
-      
-   
-     //A1B0B1Solid concrete block for shield with hole for the pipe
-        G4SubtractionSolid* fConcreteA1B0B1Solid = new G4SubtractionSolid("ConcreteA1B0B1", fConcreteA1B0Solid, fConcreteA1B1Solid,0, G4ThreeVector(0.,25.*CLHEP::cm,0.));
-        
-     //A1Solid concrete block for shield with hole for the pipe and for Lead cap
-        G4SubtractionSolid* fConcreteA1B0B1B2Solid = new G4SubtractionSolid("ConcreteA1B0B1B2", fConcreteA1B0B1Solid, fConcreteA1B2Solid,
-        																	0, 
-        																	G4ThreeVector(0.,
-        																				  25.*CLHEP::cm,
-        																				  -(fConcreteA1Length-(fA1LeadPipeCapLength + 10.*CLHEP::mm)) * 0.5 - 10.*CLHEP::mm
-        																				  )
-        																	);     
-        
-        
-        fConcreteA1Logic = new G4LogicalVolume(fConcreteA1B0B1B2Solid,
-                                               fConcreteMaterial,
-                                               "ConcreteA1");	
-				
-		
-		fConcreteA1Logic->SetVisAttributes(fConcreteVisAttribute);
-		
-		// Pb pipe cap
-		G4Box* fA1LeadPipeCapB0Solid = new G4Box("PipeCapA1B0",
-                                              fA1LeadPipeCapWidth * 0.5,
-                                              fA1LeadPipeCapHeight * 0.5,
-                                              fA1LeadPipeCapLength * 0.5);
-
-		//A1B1 tube for shield tube hole
-        G4Tubs* fA1LeadPipeCapB1Solid = new G4Tubs("PipeCapA1B1",
-                                                0.,
-                                                fConcreteA1RadiusPipe,
-                                                fA1LeadPipeCapLength * 0.6,
-                                                0*CLHEP::deg,
-                                                360*CLHEP::deg);
-	
-		//Lead pipe Cap solid with hole
-        G4SubtractionSolid* fA1LeadPipeCapSolid = new G4SubtractionSolid("A1LeadPipeCap", fA1LeadPipeCapB0Solid, fA1LeadPipeCapB1Solid,0, G4ThreeVector(0.,0.,0.));
-        
-        
-        fA1LeadPipeCapLogic = new G4LogicalVolume(fA1LeadPipeCapSolid,
-                                               fPbDiskMaterial,
-                                               "A1LeadPipeCap");
-                
-        fA1LeadPipeCapLogic->SetVisAttributes(fPbCapVisAttribute);
-        
-        G4ThreeVector fA1LeadPipeCapPositionVector = G4ThreeVector(0.,0.,fConcreteA1Distance -(fConcreteA1Length-fA1LeadPipeCapLength ) * 0.5);
-        
-        fA1LeadPipeCapPhysical = new G4PVPlacement(0,
-                                                fA1LeadPipeCapPositionVector,
-                                                fA1LeadPipeCapLogic,
-                                                "A1LeadPipeCap",
-                                                fWorldLogic,
-                                                false,
-                                                0);
-        
-		
-		}
-		else //IDEAL CONCRETE HOLE
-		{
-	//A1B0 concrete block for shield -no hole
-
-        G4Box* fConcreteA1B0Solid = new G4Box("ConcreteA1B0",
-                                              fConcreteA1Width * 0.5,
-                                              fConcreteA1Height * 0.5,
-                                              fConcreteA1Length * 0.5); //??EDIT TO CHECK CONCRETE THICKNESS SHIELDING 
-
-	//A1B1 tube for shield tube hole
+	//A1B1 tube for shield hole
         G4Tubs* fConcreteA1B1Solid = new G4Tubs("ConcreteA1B1",
                                                 0.,
                                                 fConcreteA1RadiusPipe,
@@ -811,12 +722,10 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
         fConcreteA1Logic = new G4LogicalVolume(fConcreteA1Solid,
                                                fConcreteMaterial,
                                                "ConcreteA1");
-                
+        
         fConcreteA1Logic->SetVisAttributes(fConcreteVisAttribute);
-        }
         
-        
-        G4ThreeVector fConcreteA1PositionVector = G4ThreeVector(0.,-25.*CLHEP::cm,fConcreteA1Distance);
+        G4ThreeVector fConcreteA1PositionVector = G4ThreeVector(0.,-25.*CLHEP::cm,fConcreteA1Distance+40.*CLHEP::cm); //??EDIT z TO CHECK CONCRETE THICKNESS SHIELDING 
         
         fConcreteA1Physical = new G4PVPlacement(0,
                                                 fConcreteA1PositionVector,
@@ -826,7 +735,7 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
                                                 false,
                                                 0);
     
-		
+
 	//-------------------------------------------FLOOR  --------------------------------------------------//
 
         G4Box* fConcreteFloorSolid = new G4Box("ConcreteFloor",

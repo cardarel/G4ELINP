@@ -133,6 +133,8 @@ private:
     // Concrete // variables added
 private:
     G4bool bConcrete;
+    G4bool bA1ConcreteDetail;
+       
     G4Material *fConcreteMaterial;
     
     G4LogicalVolume* fConcreteA0Logic;
@@ -140,6 +142,7 @@ private:
     G4LogicalVolume* fConcreteTopLogic;
     G4LogicalVolume* fConcreteRightWallLogic;
     G4LogicalVolume* fConcreteLeftWallLogic;
+    G4LogicalVolume* fA1LeadPipeCapLogic;
     //G4LogicalVolume* fConcreteA2Logic;
        
     G4VPhysicalVolume* fConcreteA0Physical;
@@ -148,6 +151,7 @@ private:
     G4VPhysicalVolume* fConcreteRightWallPhysical;
     G4VPhysicalVolume* fConcreteLeftWallPhysical;
     G4VPhysicalVolume* fConcreteA2Physical;
+    G4VPhysicalVolume* fA1LeadPipeCapPhysical;
 
     //G4double fConcreteA0Length; PAOLO
     //G4double fConcreteA0Width;
@@ -163,6 +167,9 @@ private:
     G4double fConcreteA1Height;
     G4double fConcreteA1RadiusPipe;
     G4double fConcreteA1Distance;
+    G4double fA1LeadPipeCapWidth;
+	G4double fA1LeadPipeCapHeight;
+	G4double fA1LeadPipeCapLength;
     
     //Walls 
    	G4double fRoomWidth; 
@@ -493,7 +500,7 @@ private:
     // Transparent detector
 public:
     void SetPbDisks(G4int pbdisks) {PbDisks = pbdisks;};
-    
+
 private:
     G4int PbDisks;
     
@@ -504,8 +511,8 @@ private:
     
     G4double fPbDiskA0Distance;
     G4double fPbDiskA1Distance;
-    
-    G4Material* fPbDiskMaterial;
+    G4Material* fPbDiskMaterial;  
+   
 };
 
 
