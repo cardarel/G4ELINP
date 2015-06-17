@@ -83,6 +83,10 @@ G4ELIMED_DetectorConstruction::G4ELIMED_DetectorConstruction():fWorldLogic(0){
     // World
     fWorldSize = G4ThreeVector(20000. * CLHEP::cm,20000. * CLHEP::cm,20000. * CLHEP::cm);
     
+    //scoring screen selection
+    
+    bScoringCSPEC = 0; // 0 -> Large scoring screen ; 1 -> CSPEC box scoring //!!BAL
+    
     // Beam pipe e Modules
     bBeamPipe = true;
     bConcrete = true;
@@ -91,8 +95,8 @@ G4ELIMED_DetectorConstruction::G4ELIMED_DetectorConstruction():fWorldLogic(0){
     bCollimator = true;
     bTransparentDetector = true;
     bModulesOn = true;
-    bA1ConcreteDetail = true;
-    
+    bA1ConcreteDetail = true; 
+        
     // Pb disks
     PbDisks = 0;
 	bLine=1;
@@ -124,16 +128,33 @@ void G4ELIMED_DetectorConstruction::ResetDetectorForSetup(int line){
 
 	bLine=line;
 	//Collimator center distance
-	 fCollimatorCenterDistance = 1025.5 * CLHEP::cm;
+	 fCollimatorCenterDistance = 1025.5 * CLHEP::cm + 15. *CLHEP::cm; //added manually the value vRelativedistance/2 (distance from slits 1-12 to 13-14)
     if(bLine==1){
-        fCollimatorCenterDistance = 904. * CLHEP::cm;
+        fCollimatorCenterDistance = 904. * CLHEP::cm + 15. *CLHEP::cm; //added manually the value vRelativedistance/2 (distance from slits 1-12 to 13-14)
 			}
+			
+	// Collimator
+    fCollimatorLength = 20. * CLHEP::mm;
+    fCollimatorWidth = 30. * CLHEP::mm;
+    fCollimatorHeight = 40. * CLHEP::mm;
+    
+    fCollimatorSupportA0B0Width = 90. * CLHEP::mm;
+    fCollimatorSupportA0B0Height = 70. * CLHEP::mm;
+    
+    fCollimatorSupportA0B1Width = 80. * CLHEP::mm;
+    fCollimatorSupportA0B1Distance = -5. * CLHEP::mm;
+    
+    fCollimatorSupportA1B0Length = 5. * CLHEP::mm;
+    
+    fCollimatorSupportA1B1Width = 60. * CLHEP::mm;
+
+	
     // Roman Pot
     fRomanPotWindowLength = 2.5 * CLHEP::cm;
     fRomanPotWindowInnerRadius = 2.16 * CLHEP::cm;
     fRomanPotWindowOuterRadius = 10. * CLHEP::cm;
     
-    fRomanPotLength = 47. * CLHEP::cm;
+    fRomanPotLength = (fCollimatorLength + fCollimatorSupportA1B0Length * 2.) * 14 + 30. *CLHEP::cm; //added manually the value vRelativedistance (distance from slits 1-12 to 13-14)
     fRomanPotInnerRadius = 8.1 * CLHEP::cm;
     fRomanPotOuterRadius = 8.35 * CLHEP::cm; 
           
@@ -204,20 +225,6 @@ void G4ELIMED_DetectorConstruction::ResetDetectorForSetup(int line){
 	fA1LeadPipeCapHeight = 140. * CLHEP::mm;
 	fA1LeadPipeCapLength = 250. * CLHEP::mm;
     
-    // Collimator
-    fCollimatorLength = 20. * CLHEP::mm;
-    fCollimatorWidth = 30. * CLHEP::mm;
-    fCollimatorHeight = 40. * CLHEP::mm;
-    
-    fCollimatorSupportA0B0Width = 90. * CLHEP::mm;
-    fCollimatorSupportA0B0Height = 70. * CLHEP::mm;
-    
-    fCollimatorSupportA0B1Width = 80. * CLHEP::mm;
-    fCollimatorSupportA0B1Distance = -5. * CLHEP::mm;
-    
-    fCollimatorSupportA1B0Length = 5. * CLHEP::mm;
-    
-    fCollimatorSupportA1B1Width = 60. * CLHEP::mm;
 
     // Girders, Pedestals and vacuum cahmbers
     fGirderHeight = 214. * CLHEP::mm;
@@ -1052,7 +1059,7 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
 
     
     G4double fRomanPotCollimatorEnvelopeWidth = 0.5 * sqrt(fCollimatorSupportA0B0Width * fCollimatorSupportA0B0Width + fCollimatorSupportA0B0Height * fCollimatorSupportA0B0Height);
-    G4double fRomanPotCollimatorEnvelopeLength = (fCollimatorLength + fCollimatorSupportA1B0Length * 2.) * 0.5 * fCollimatorNumber + fCollimatorDistance;
+    G4double fRomanPotCollimatorEnvelopeLength = (fCollimatorLength + fCollimatorSupportA1B0Length * 2.) * 0.5 * fCollimatorNumber + fCollimatorDistance*0.5;
     
     G4Box* fRomanPotCollimatorEnvelopeSolid = new G4Box("fRomanPotCollimatorEnvelopeSolid",
                                                         fRomanPotCollimatorEnvelopeWidth,
@@ -1153,10 +1160,10 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
         G4double vRelativeDistance = vIndex*(fCollimatorLength+fCollimatorSupportA1B0Length*2.);
 
         if(i1>11){
-        	vRelativeDistance += fCollimatorDistance;
+        	vRelativeDistance += fCollimatorDistance; //add distance betweenn slits 1-12 and 13-14
         }
 
-        G4ThreeVector fCollimatorSupportA0PositionVector = G4ThreeVector(0.,0.,vRelativeDistance);
+        G4ThreeVector fCollimatorSupportA0PositionVector = G4ThreeVector(0.,0.,vRelativeDistance - fCollimatorDistance*0.5); //subtraction of distance betweenn slits 1-12 and 13-14, so first slit is at entrance of fRomanPotCollimatorEnvelopeLogic
         
         G4RotationMatrix* fCollimatorRotationMatrix = new G4RotationMatrix(2.*M_PI*vAngle,0.,0.);
 
@@ -1462,14 +1469,9 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
     
     if (bModulesOn==true)
 	{
-        fCSPECPhysical = new G4PVPlacement(0,
-                                              fCSPECPositionVector,
-                                              fCSPECLogic,
-                                              "CSPEC",
-                                              fWorldLogic,
-                                              false,
-                                              0);
-         /*                                   													//for CSPEC scoting only!!
+
+         if(bScoringCSPEC==1)
+         {                                   													//for CSPEC scoring only!!
          fTransparentCSPECPhysical = new G4PVPlacement(0,
                                               fTransparentCSPECPositionVector,
                                               fTransparentCSPECLogic,
@@ -1477,7 +1479,17 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
                                               fWorldLogic,
                                               false,
                                               0);
-         */
+         }
+         else
+         {
+                 fCSPECPhysical = new G4PVPlacement(0,							//for large screen scoring only!!
+                                              fCSPECPositionVector,
+                                              fCSPECLogic,
+                                              "CSPEC",
+                                              fWorldLogic,
+                                              false,
+                                              0);
+        }
                                               
      }    
         G4Tubs* fCSPECtWindowSolid = new G4Tubs("fCSPECWindow",
@@ -1498,7 +1510,9 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
         
     if (bModulesOn==true)
     {
-        fCSPECWindow0Physical = new G4PVPlacement(0,
+   		 if(bScoringCSPEC==0)
+        	 {   
+       		 fCSPECWindow0Physical = new G4PVPlacement(0,
                                                      fCSPECWindow0PositionVector,
                                                      fCSPECWindowLogic,
                                                      "fCSPECWindow0",
@@ -1506,13 +1520,14 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
                                                      false,
                                                      0);
         
-        fCSPECWindow1Physical = new G4PVPlacement(0,
+       	 		fCSPECWindow1Physical = new G4PVPlacement(0,
                                                      fCSPECWindow1PositionVector,
                                                      fCSPECWindowLogic,
                                                      "fCSPECWindow1",
                                                      fWorldLogic,
                                                      false,
                                                      0);
+      		 }
      
      }
      //M31
@@ -2462,7 +2477,9 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
         													fBeamPipeA0Length + (fRomanPotLength + 2.*fRomanPotWindowLength) + fBeamPipeA2Length + fTransparentDetectorLength * 0.5);
         
 
-        fTransparentDetectorBoxPhysical = new G4PVPlacement(0,
+		       if(bScoringCSPEC==0) //in case of CSPEC scoring to avoid overlap 
+       			{   
+       			 fTransparentDetectorBoxPhysical = new G4PVPlacement(0,
                                                             fTransparentDetectorBoxPositionVector,
                                                             fTransparentDetectorBoxLogic,
                                                             "TransparentDetectorBox",
@@ -2470,25 +2487,25 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
                                                             false,
                                                             1);
 
-        //G4ThreeVector fTransparentDetectorBoxPositionVector;
+       			 //G4ThreeVector fTransparentDetectorBoxPositionVector;
 
 
-        fTransparentDetectorBoxPositionVector = G4ThreeVector(fRoomShiftX,
+        		fTransparentDetectorBoxPositionVector = G4ThreeVector(fRoomShiftX,
         													fRoomShiftY,	
         													fConcreteA0Distance + fWallThickness * 0.5 + fRoomLength + fWallThickness + fTransparentDetectorLength * 0.5);
         
         
-        fTransparentDetectorBoxPhysical = new G4PVPlacement(0,
-                                                            fTransparentDetectorBoxPositionVector,
+       			fTransparentDetectorBoxPhysical = new G4PVPlacement(0,
+       	                                                     fTransparentDetectorBoxPositionVector,
                                                             fTransparentDetectorBoxLogic,
                                                             "TransparentDetectorBox",
                                                             fWorldLogic,
                                                             false,
                                                             2);
 
-        //fTransparentDetectorLogic->SetVisAttributes(G4VisAttributes::GetInvisible()); // EDIT PAOLO detector set visible
-        //fTransparentDetectorBoxLogic->SetVisAttributes(G4VisAttributes::GetInvisible());
-    
+       			 //fTransparentDetectorLogic->SetVisAttributes(G4VisAttributes::GetInvisible()); // EDIT PAOLO detector set visible
+        		//fTransparentDetectorBoxLogic->SetVisAttributes(G4VisAttributes::GetInvisible());
+    			}
     
     	//Transparent Detector RACKS 
          G4Box* fTransparentDetectorRack1Solid = new G4Box("TransparentDetectorRack1Solid",
@@ -2538,7 +2555,7 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
                                                          0); 
     	*/
     	//Transparent Detector for Hexapod dose evaluation 
-       G4Box* fTransparentDetectorHexapodSolid = new G4Box("TransparentDetectorHexapodSolid",
+        G4Box* fTransparentDetectorHexapodSolid = new G4Box("TransparentDetectorHexapodSolid",
                                                      5 * CLHEP::cm,
                                                      5 * CLHEP::cm,
                                                      5 * CLHEP::cm);
@@ -2669,14 +2686,19 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
         G4SDManager::GetSDMpointer()->AddNewDetector(vDetector);
         
         //fTransparentDetectorLogic->SetSensitiveDetector(vDetector);
-
-        fTransparentDetectorBoxLogic->SetSensitiveDetector(vDetector);
-        //fTransparentCSPECLogic->SetSensitiveDetector(vDetector); //CSPEC scoring only!!
        
+       if(bScoringCSPEC==1)
+       		{   
+     		fTransparentCSPECLogic->SetSensitiveDetector(vDetector); //CSPEC scoring only!!
+     		}
+     	else
+     		{  
+            fTransparentDetectorBoxLogic->SetSensitiveDetector(vDetector);
+            }
+               
         //fTransparentDetectorRack1Logic->SetSensitiveDetector(vDetector);
         //fTransparentDetectorRack2Logic->SetSensitiveDetector(vDetector);
-		
-	//fTransparentDetectorHexapodLogic->SetSensitiveDetector(vDetector);
+		//fTransparentDetectorHexapodLogic->SetSensitiveDetector(vDetector);
         //fCollimatorLogic->SetSensitiveDetector(vDetector);
     }
     
@@ -2701,15 +2723,20 @@ void G4ELIMED_DetectorConstruction::ConstructSDandField(){
         G4SDManager::GetSDMpointer()->AddNewDetector(vDetector);
         
         //fTransparentDetectorLogic->SetSensitiveDetector(vDetector);
-        
-        fTransparentDetectorBoxLogic->SetSensitiveDetector(vDetector);
-        //fTransparentCSPECLogic->SetSensitiveDetector(vDetector); //CSPEC scoring only!!
+       
+       if(bScoringCSPEC==1)
+       		{   
+     		fTransparentCSPECLogic->SetSensitiveDetector(vDetector); //CSPEC scoring only!!
+     		}
+     	else
+     		{  
+            fTransparentDetectorBoxLogic->SetSensitiveDetector(vDetector);
+            }
                 
-       // fTransparentDetectorRack1Logic->SetSensitiveDetector(vDetector);
-        //fTransparentDetectorRack2Logic->SetSensitiveDetector(vDetector);
-
-	//fTransparentDetectorHexapodLogic->SetSensitiveDetector(vDetector);
-        //fCollimatorLogic->SetSensitiveDetector(vDetector);
+       //fTransparentDetectorRack1Logic->SetSensitiveDetector(vDetector);
+       //fTransparentDetectorRack2Logic->SetSensitiveDetector(vDetector);
+       //fTransparentDetectorHexapodLogic->SetSensitiveDetector(vDetector);
+       //fCollimatorLogic->SetSensitiveDetector(vDetector);
     }
     
        G4MultiFunctionalDetector* multisd = new G4MultiFunctionalDetector("/multisd");

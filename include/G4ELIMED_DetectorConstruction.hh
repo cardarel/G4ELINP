@@ -443,6 +443,7 @@ private:
                    
     // Transparent detector
 private:
+	G4int bScoringCSPEC;
     G4bool bTransparentDetector;
     G4LogicalVolume* fTransparentDetectorLogic;
     G4LogicalVolume* fTransparentDetectorBoxLogic;
