@@ -85,7 +85,7 @@ G4ELIMED_DetectorConstruction::G4ELIMED_DetectorConstruction():fWorldLogic(0){
     
     //scoring screen selection
     
-    bScoringCSPEC = 0; // 0 -> Large scoring screen ; 1 -> CSPEC box scoring //!!BAL
+    bScoringCSPEC = 1; // 0 -> Large scoring screen ; 1 -> CSPEC box scoring //!!BAL
     
     // Beam pipe e Modules
     bBeamPipe = true;
@@ -128,9 +128,9 @@ void G4ELIMED_DetectorConstruction::ResetDetectorForSetup(int line){
 
 	bLine=line;
 	//Collimator center distance
-	 fCollimatorCenterDistance = 1025.5 * CLHEP::cm + 15. *CLHEP::cm; //added manually the value vRelativedistance/2 (distance from slits 1-12 to 13-14)
+	 fCollimatorCenterDistance = 1025.5 * CLHEP::cm + 10. *CLHEP::cm; //added manually the value vRelativedistance/2 (distance from slits 1-12 to 13-14)
     if(bLine==1){
-        fCollimatorCenterDistance = 904. * CLHEP::cm + 15. *CLHEP::cm; //added manually the value vRelativedistance/2 (distance from slits 1-12 to 13-14)
+        fCollimatorCenterDistance = 904. * CLHEP::cm + 10. *CLHEP::cm; //added manually the value vRelativedistance/2 (distance from slits 1-12 to 13-14)
 			}
 			
 	// Collimator
@@ -154,7 +154,7 @@ void G4ELIMED_DetectorConstruction::ResetDetectorForSetup(int line){
     fRomanPotWindowInnerRadius = 2.16 * CLHEP::cm;
     fRomanPotWindowOuterRadius = 10. * CLHEP::cm;
     
-    fRomanPotLength = (fCollimatorLength + fCollimatorSupportA1B0Length * 2.) * 14 + 30. *CLHEP::cm; //added manually the value vRelativedistance (distance from slits 1-12 to 13-14)
+    fRomanPotLength = (fCollimatorLength + fCollimatorSupportA1B0Length * 2.) * 14 + 20. *CLHEP::cm; //added manually the value vRelativedistance (distance from slits 1-12 to 13-14)
     fRomanPotInnerRadius = 8.1 * CLHEP::cm;
     fRomanPotOuterRadius = 8.35 * CLHEP::cm; 
           
@@ -392,6 +392,7 @@ void G4ELIMED_DetectorConstruction::DefineMaterials(){
     G4Material* G4_Concrete = G4NistManager::Instance()->FindOrBuildMaterial("G4_CONCRETE");
     G4Material* G4_AIR = G4NistManager::Instance()->FindOrBuildMaterial("G4_AIR");
     G4Material* G4_Cu = G4NistManager::Instance()->FindOrBuildMaterial("G4_Cu");
+    G4Material* G4_Mo = G4NistManager::Instance()->FindOrBuildMaterial("G4_Mo");
 
 
     // Definition of stainless steel (not in NIST) for pipes and sand for pedestals 
@@ -443,7 +444,7 @@ void G4ELIMED_DetectorConstruction::DefineMaterials(){
     fBeamPipeMaterial = StainlessSteel;
     fConcreteMaterial = G4_Concrete;
     fCollimatorMaterial = G4_W;
-    fCollimatorSupportMaterial = G4_Al;
+    fCollimatorSupportMaterial = G4_Mo;
     fPbDiskMaterial = G4_Pb;
     fBeamPipeVacuum = Vacuum;
        
@@ -1366,8 +1367,10 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
     
     if (bModulesOn==true)
     {
-    fM30LGirderPhysical = new G4PVPlacement(0,
-                                            fM30LGirderPositionVector,
+/*
+  
+      fM30LGirderPhysical = new G4PVPlacement(0,
+                                           fM30LGirderPositionVector,
                                             fM30GirderLogic,
                                             "M30LGirder",
                                             fWorldLogic,
@@ -1401,8 +1404,10 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
                                             fWorldLogic,
                                             false,
                                             0);
+*/
+
     //M30 Pedestals
-    G4ThreeVector fM30Pedestal1PositionVector = G4ThreeVector(0., fPedestalM30Y,fM30Distance - fM30GirderLength * 0.5 + fPedestalLength * 0.5); 
+   G4ThreeVector fM30Pedestal1PositionVector = G4ThreeVector(0., fPedestalM30Y,fM30Distance - fM30GirderLength * 0.5 + fPedestalLength * 0.5); 
     G4ThreeVector fM30Pedestal2PositionVector = G4ThreeVector(0., fPedestalM30Y,fM30Distance + fM30GirderLength * 0.5 - fPedestalLength * 0.5);
     
     fM30Pedestal1Physical = new G4PVPlacement(0,
@@ -1453,7 +1458,8 @@ G4VPhysicalVolume* G4ELIMED_DetectorConstruction::Construct(){
        
         G4Box* fTransparentCSPECSolid = new G4Box("TransparentCSPEC",  //for CSPEC scoring ONLY!
                                               43.*CLHEP::cm,
-                                              fCSPECOuterRadius + 10*CLHEP::cm,
+                                              //fCSPECOuterRadius + 10*CLHEP::cm,
+					      50. *CLHEP::cm,
                                               (fM31Distance - 0.5 * fM31GirderLength - (fConcreteA1Distance + 0.5 *fConcreteA1Length)) * 0.5 );   
         
         fTransparentCSPECLogic = new G4LogicalVolume(fTransparentCSPECSolid,
