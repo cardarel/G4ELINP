@@ -82,7 +82,13 @@ G4ELIMED_DetectorConstructionMessenger::G4ELIMED_DetectorConstructionMessenger(G
     fCollimatorSetupCmd->SetParameterName("line",false);
     fCollimatorSetupCmd->SetRange("line>=0 && line<=1");
     fCollimatorSetupCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
-    
+
+    fCollimatorScoringCSPECCmd = new G4UIcmdWithAnInteger("/line/setcspec",this);
+    fCollimatorScoringCSPECCmd->SetGuidance("Set scoring CSPEC 0->default; 1->cspecbox");
+    fCollimatorScoringCSPECCmd->SetParameterName("cspec",false);
+    fCollimatorScoringCSPECCmd->SetRange("cspec>=0 && cspec<=1");
+    fCollimatorScoringCSPECCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
+
     fPbDisksCmd = new G4UIcmdWithAnInteger("/collimator/PbDisks",this);
     fPbDisksCmd->SetGuidance("Set disk 1 (1), disk 2 (2), no disk (0), both disks (3).");
     fPbDisksCmd->SetParameterName("disk",false);
@@ -161,6 +167,7 @@ G4ELIMED_DetectorConstructionMessenger::~G4ELIMED_DetectorConstructionMessenger(
     delete fCollimatorRandDisplMeanCmd;
     delete fCollimatorRandDisplSigmaCmd;
     delete fCollimatorAngleCmd;
+    delete fCollimatorScoringCSPECCmd;
 
     for(G4int index=0;index<64;index++){
         delete fCollimatorSingleDisplMeanCmd[index];
@@ -192,7 +199,10 @@ void G4ELIMED_DetectorConstructionMessenger::SetNewValue(G4UIcommand * command,G
     
     if( command == fCollimatorSetupCmd )
     { fDetectorTarget->ResetDetectorForSetup(fCollimatorSetupCmd->GetNewIntValue(newValue));}
-    
+
+    if( command == fCollimatorScoringCSPECCmd )
+    { fDetectorTarget->SetCSPEC(fCollimatorScoringCSPECCmd->GetNewIntValue(newValue));}
+
 
     if( command == fPbDisksCmd )
     { fDetectorTarget->SetPbDisks(fPbDisksCmd->GetNewIntValue(newValue));}

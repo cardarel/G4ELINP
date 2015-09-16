@@ -442,6 +442,9 @@ private:
         G4VPhysicalVolume* fM34MagnetCoilBottomPhysical;
                    
     // Transparent detector
+public:
+    void SetCSPEC(int aInt) {bScoringCSPEC = aInt;};
+    
 private:
 	G4int bScoringCSPEC;
     G4bool bTransparentDetector;

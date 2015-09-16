@@ -61,6 +61,7 @@ class G4ELIMED_DetectorConstructionMessenger: public G4UImessenger
 
     G4UIcmdWithADoubleAndUnit* fCollimatorDistanceCmd;
     G4UIcmdWithAnInteger* fCollimatorNumberCmd;
+    G4UIcmdWithAnInteger* fCollimatorScoringCSPECCmd;
 
     G4UIcmdWithAnInteger* fCollimatorRandDisplCmd;
     G4UIcmdWithADoubleAndUnit* fCollimatorRandDisplMeanCmd;
