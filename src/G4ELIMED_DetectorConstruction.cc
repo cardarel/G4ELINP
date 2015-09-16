@@ -85,7 +85,7 @@ G4ELIMED_DetectorConstruction::G4ELIMED_DetectorConstruction():fWorldLogic(0){
     
     //scoring screen selection
     
-    bScoringCSPEC = 1; // 0 -> Large scoring screen ; 1 -> CSPEC box scoring //!!BAL
+    bScoringCSPEC = 1; // 0 -> Large scoring screen ; 1 -> CSPEC box scoring //
     
     // Beam pipe e Modules
     bBeamPipe = true;
@@ -128,9 +128,9 @@ void G4ELIMED_DetectorConstruction::ResetDetectorForSetup(int line){
 
 	bLine=line;
 	//Collimator center distance
-	 fCollimatorCenterDistance = 1025.5 * CLHEP::cm + 10. *CLHEP::cm; //added manually the value vRelativedistance/2 (distance from slits 1-12 to 13-14)
+	 fCollimatorCenterDistance = 1025.5 * CLHEP::cm + fCollimatorDistance * 0.5; //10. *CLHEP::cm; //added manually the value vRelativedistance/2 (distance from slits 1-12 to 13-14)
     if(bLine==1){
-        fCollimatorCenterDistance = 904. * CLHEP::cm + 10. *CLHEP::cm; //added manually the value vRelativedistance/2 (distance from slits 1-12 to 13-14)
+        fCollimatorCenterDistance = 904. * CLHEP::cm + fCollimatorDistance * 0.5; // 10. *CLHEP::cm; //added manually the value vRelativedistance/2 (distance from slits 1-12 to 13-14)
 			}
 			
 	// Collimator
@@ -154,7 +154,7 @@ void G4ELIMED_DetectorConstruction::ResetDetectorForSetup(int line){
     fRomanPotWindowInnerRadius = 2.16 * CLHEP::cm;
     fRomanPotWindowOuterRadius = 10. * CLHEP::cm;
     
-    fRomanPotLength = (fCollimatorLength + fCollimatorSupportA1B0Length * 2.) * 14 + 20. *CLHEP::cm; //added manually the value vRelativedistance (distance from slits 1-12 to 13-14)
+    fRomanPotLength = (fCollimatorLength + fCollimatorSupportA1B0Length * 2.) * 14 + fCollimatorDistance;//20. *CLHEP::cm; //added manually the value vRelativedistance (distance from slits 1-12 to 13-14)
     fRomanPotInnerRadius = 8.1 * CLHEP::cm;
     fRomanPotOuterRadius = 8.35 * CLHEP::cm; 
           
